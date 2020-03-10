@@ -14,7 +14,7 @@
     var M = function(name){this.name = name}
     var o3 = new M('o3')
     ``` 
-3. `Object.create()`
+3. **Object.create()**
     
     ```js
     var p = {name: 'p'}
@@ -86,7 +86,7 @@ o6.walk()
 
 ### 面向对象类oop
 
-##### 类与实例
+#### 类与实例
 
 1. 类的声明：构造函数、es6的class
  
@@ -111,7 +111,7 @@ o6.walk()
     new Animal2()
     ```
 
-##### 类与继承(通过`原型链`实现继承)
+#### 类与继承(通过`原型链`实现继承)
 
 - 如何实现继承
 
@@ -258,9 +258,7 @@ o6.walk()
 
 拓展：
 
-`Object.prototype.toString方法`
-
-`Object.prototype.toString.call(obj) === “[object Object]"`
+**Object.prototype.toString**方法
 
 ```js
 console.log(Object.prototype.toString.call("jerry"));   //[object String]

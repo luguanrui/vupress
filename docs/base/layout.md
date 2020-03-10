@@ -2,86 +2,91 @@
 
 题目：假设高度已知，请写出三栏布局，其中左栏，右栏宽度各300px，中间自适应
 
-5种方案：flex布局，绝对定位布局absolute，浮动布局float，表格布局table，网格布局grid
+5种方案：
+- flex布局
+- 绝对定位布局absolute
+- 浮动布局float
+- 表格布局table
+- 网格布局grid
 
 1. flex布局
 
-    ```css
-    .content{
-        display: flex;
-    }
-    .left {
-        width: 300px;
-    }
-    .right {
-        width: 300px;
-    }
-    .center {
-        flex: 1;
-    }
-    ```
+```css
+.content{
+    display: flex;
+}
+.left {
+    width: 300px;
+}
+.right {
+    width: 300px;
+}
+.center {
+    flex: 1;
+}
+```
 
 2. 绝对定位布局absolute
 
-    ```css
-    .left,.right,.center {
-        position: absolute;
-    }
-    .left {
-        left: 0;
-        width: 300px
-    }
-    .right {
-        right: 0;
-        width: 300px;
-    }
-    .center {
-        left: 300px；
-        right: 300px;
-    }
-    ```
+```css
+.left,.right,.center {
+    position: absolute;
+}
+.left {
+    left: 0;
+    width: 300px
+}
+.right {
+    right: 0;
+    width: 300px;
+}
+.center {
+    left: 300px；
+    right: 300px;
+}
+```
 3. 浮动布局float
 
-    ```css
-    .left {
-        float: left;
-        width: 300px;
-    }
-    .right {
-        float: right;
-        width: 300px;
-    }
-    ```
+```css
+.left {
+    float: left;
+    width: 300px;
+}
+.right {
+    float: right;
+    width: 300px;
+}
+```
 
 4. 表格布局table
 
-    ```css
-    .content {
-        width: 100%;
-        display: table;
-        height: 100px;
-    }
-    .left,.right,.center {
-        display: table-cell;
-    }
-    .left {
-        width: 300px;
-    }
-    .right {
-        width: 300px;
-    }
-    ```
+```css
+.content {
+    width: 100%;
+    display: table;
+    height: 100px;
+}
+.left,.right,.center {
+    display: table-cell;
+}
+.left {
+    width: 300px;
+}
+.right {
+    width: 300px;
+}
+```
 
 5. 网格布局grid
 
-    ```css
-    .content {
-        display: grid;
-        width: 100%;
-        grid-template-rows: 100px;
-        grid-template-columns: 300px auto 300px;
-    }
-    ```
+```css
+.content {
+    display: grid;
+    width: 100%;
+    grid-template-rows: 100px;
+    grid-template-columns: 300px auto 300px;
+}
+```
 
 延伸：
 
@@ -99,7 +104,7 @@
 
 3.  兼容性如何，哪个最实用 ：
 
-页面布局的变通：
+4. 页面布局的变通：
 
 - 三栏布局：
     - 左右宽度固定，中间自适应

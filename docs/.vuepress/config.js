@@ -3,12 +3,10 @@ const moment = require('moment')
 module.exports = {
   title: 'Documents',
   description: 'this is my docuemnts',
+  head: [['link', { rel: 'icon', href: '/logo.png' }]],
   themeConfig: {
     lastUpdated: '上次更新',
     sidebarDepth: 0,
-    head: [
-      ['link', { rel: 'icon', href: '/public/logo.png' }]
-    ],
     nav: [
       // {
       //   text: '首页',
@@ -33,9 +31,9 @@ module.exports = {
           title: '基础',
           collapsable: false,
           children: [
-            ['html', 'html'],
+            ['html', 'html相关'],
             ['layout', '页面布局'],
-            ['css', 'CSS盒模型'],
+            ['css', 'css相关'],
             ['scope', '作用域和闭包'],
             ['dom', 'DOM事件'],
             ['prototype', '原型链'],

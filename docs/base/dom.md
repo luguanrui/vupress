@@ -2,41 +2,38 @@
 
 1. 基本概念：DOM事件的级别(了解即可)
 
-    DOM0: element.onclick=function(){}
+- **DOM0**: element.onclick=function(){}
     
-    DOM2: element.addEventListener('click',function(){},false)，true表示在捕获阶段触发，false表示在冒泡阶段触发，默认是false
+- **DOM2**: element.addEventListener('click',function(){},false)，true表示在捕获阶段触发，false表示在冒泡阶段触发，默认是false
     
-    DOM3: element.addEventListener('keyup',function(){},false)
+- **DOM3**: element.addEventListener('keyup',function(){},false)
 
-2. DOM事件模型
+1. DOM事件模型
 
     捕获（从上到下），冒泡（从下到上）
 
-3. DOM事件流
+2. DOM事件流
 
-    三个阶段：捕获->目标阶段->冒泡
+    三个阶段：**捕获->目标阶段->冒泡**
     
     比说点击鼠标左键的事情是如何传递到页面上的：点击事件通过捕获到达目标元素，再从目标元素上传到window对象
 
-4. 描述DOM事件捕获的具体流程
+3. 描述DOM事件捕获的具体流程
     
-    捕获流程：window->document->html标签->body->按照html结构传递...->目标元素
+    捕获流程：**window -> document -> html标签 -> body -> 按照html结构传递... -> 目标元素**
 
     冒泡流程：与捕获阶段逆向
 
-5. Event对象的常见应用
-
-    event.preventDefault() 阻止默认事件
-    
-    event.stopPropagation() 阻止冒泡
-    
+4. Event对象的常见应用
+    ```js
+    event.preventDefault()  // 阻止默认事件
+    event.stopPropagation() // 阻止冒泡
     event.stopImmediatePropagation()
-    
     event.currentTarget
-    
     event.target
+    ```
 
-6. 自定义事件,或者是模拟事件
+5. 自定义事件,或者是模拟事件
 
     Event
     
@@ -55,12 +52,12 @@
 
 拓展：
 
-在juqery中DOMContentLoaded的表现：
+在juqery中`DOMContentLoaded`的表现：
 ``` javascript
 $(function(){…})  <=> $(document).ready(function(){…})
 ```
 
-在juqery中onload：
+在juqery中`onload`：
 ``` javascript
 $(document).load(function(){…})
 ```
