@@ -1,7 +1,11 @@
+const moment = require('moment')
+
 module.exports = {
   title: 'Documents',
   description: 'this is my docuemnts',
   themeConfig: {
+    lastUpdated: '上次更新',
+    sidebarDepth: 0,
     nav: [
       // {
       //   text: '首页',
@@ -13,7 +17,7 @@ module.exports = {
       },
       {
         text: 'Vue',
-        link: '/vue/index'
+        link: '/vue/vue'
       },
       {
         text: 'GitHub',
@@ -38,13 +42,28 @@ module.exports = {
           ]
         }
       ],
-      // '/vue/': [
-      //   {
-      //     title: 'Vue',
-      //     collapsable: false,
-      //     // children: [['questions', '问题']]
-      //   }
-      // ]
+      '/vue/': [
+        {
+          title: 'Vue',
+          collapsable: false,
+          children: [
+            ['vue', 'vue'],
+            ['vue-router', 'vue-router'],
+            ['vuex', 'vuex']
+          ]
+        }
+      ]
     }
-  }
+  },
+  plugins: [
+    '@vuepress/back-to-top',
+    [
+      '@vuepress/last-updated',
+      {
+        transformer: (timestamp, lang) => {
+          return moment(timestamp).format('YYYY-MM-DD HH:mm:ss')
+        }
+      }
+    ]
+  ]
 }

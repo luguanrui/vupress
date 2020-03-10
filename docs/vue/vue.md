@@ -30,10 +30,6 @@
 
 第四步：MVVM作为数据绑定的入口，整合Observer、Compile和Watcher三者，通过Observer来监听自己的model数据变化，通过Compile来解析编译模板指令，最终利用Watcher搭起Observer和Compile之间的通信桥梁，达到数据变化 -> 视图更新；视图交互变化(input) -> 数据model变更的双向绑定效果。
 
-## 路由原理
-
-## vuex原理
-
 ## keep-alive的作用
 
 ## v-if和v-show的区别
@@ -72,18 +68,17 @@ Vue是异步执行dom更新的，一旦观察到数据变化，Vue就会开启�
 
 vue-cli是vue.js的脚手架，用于自动生成vue.js+webpack的项目模板
 
-## 在Vue中，有几个生命周期钩子与<keep-alive>元素有关？
+## 在Vue中，有几个生命周期钩子与\<keep-alive>元素有关？
 
 1.activated：当组件激活时，钩子触发的顺序是created->mounted->activated
 
 2.deactivated: 组件停用时会触发deactivated，当再次前进或者后退的时候只触发activated
 
-> 页面第一次进入，钩子的触发顺序created-> mounted-> activated，退出时触发deactivated。当再次进入（前进或者后退）时，只触发activated
-
+页面第一次进入，钩子的触发顺序created-> mounted-> activated，退出时触发deactivated。当再次进入（前进或者后退）时，只触发activated
 
 ## 在Vue渲染模板时，如何才能保留模板中的HTML注释？
 
-`comments`当设为 true
+comments当设为 true
 
 ```
 <template comments="true">
@@ -179,7 +174,7 @@ vuejs 自定义了一种.vue文件，可以把html, css, js 写到一个文件�
 - Array
 - Symbol
 
-## <keep-alive>元素有什么作用
+## \<keep-alive>元素有什么作用
 
 keep-alive是vue内置的一个组件，缓存，有两个属性，include，包含，exclude不包含
 
@@ -199,7 +194,7 @@ keep-alive是vue内置的一个组件，缓存，有两个属性，include，包
 
 ref 被用来给元素或子组件注册引用信息。引用信息将会注册在父组件的 $refs 对象上。如果在普通的 DOM 元素上使用，引用指向的就是 DOM 元素
 
-## 请谈谈你对<slot>元素的理解
+## 请谈谈你对\<slot>元素的理解
 
 slot插槽，分为匿名插槽，具名插槽，作用域插槽：
 
@@ -223,93 +218,5 @@ slot插槽，分为匿名插槽，具名插槽，作用域插槽：
 函数式组件的优点：
 
 - 渲染开销低，因为函数式组件只是函数
-
-## 如何在Vue Router中配置404页面？
-```js
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
-    },
-    {
-      path: '/newDetail',
-      name: 'newDetail',
-      component: na
-    },
-   {
-  path: '*',
-    name: 'notfount',
-    component: notfount
-}
-  ]
-})
-```
-
-## 如何在Vue Router中切换路由时，保持原先的滚动位置
-
-## 在Vue Router中，怎么实现路由懒加载
-
-- vue异步组件
-```js
-{
-  path: '/home',
-  name: 'home',
-  component: resolve => require(['@/components/home'],resolve)
-}
-```
-- es提案的import()
-```js
-const Home = () => import('@/components/home'
-```
-- webpack的require,ensure()
-```js
-{
-  path: '/home',
-  name: 'home',
-  component: r => require.ensure([], () => r(require('@/components/home')), 'demo')
-},
-```
-## 在Vue Router中，什么是导航守卫
-
-导航守卫就是路由从开始变化到结束变化的钩子函数。包括三种：全局的，单个路由独享的，或者组件级的
-
-全局：
-- router.beforeEach(to,from,next)
-- router.afterEach(to,from,next)
-
-路由独享的守卫：
-- beforeEnter(to,from,next)
-
-组件内的守卫：
-- beforeRouterEnter(to,from,next)
-- beforeRouterUpdate(to,from,next)
-- beforeRouterLeave(to,from,next)
-
-## Vue Router有几种路由模式
-
-两种模式：hash和history模式
-
-## 如何开启Vuex的严格模式？它有什么作用？
-
-开启严格模式，仅需在创建 store 的时候传入strict: true
-
-```js
-const store = new Vuex.Store({
-   state,
-   strict:true//开启严格模式后，只能通过mutation来改变状态（不支持异步）否则会报错
-})
-```
-
-## Vuex的Mutation和Action有哪些区别
-
-- mutation是修改store中state的唯一途径
-- mutation必须是同步的
-- action可以是异步的，但是不能直接操作state，需要通过提交 mutation 间接更变状态
-
-## 请谈谈你对Vuex的理解
-
-Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化
 
 ## Vue为什么要求在组件的模板中只能有一个根元素？
