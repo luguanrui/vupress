@@ -6,6 +6,9 @@ module.exports = {
   themeConfig: {
     lastUpdated: '上次更新',
     sidebarDepth: 0,
+    head: [
+      ['link', { rel: 'icon', href: '/public/logo.png' }]
+    ],
     nav: [
       // {
       //   text: '首页',
