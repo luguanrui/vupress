@@ -14,7 +14,7 @@ module.exports = {
       // },
       {
         text: '基础',
-        link: '/base/layout'
+        link: '/base/html'
       },
       {
         text: 'Vue',
@@ -40,7 +40,11 @@ module.exports = {
             ['communications', '通信类'],
             ['http', 'HTTP'],
             ['safe', '安全类'],
-            ['algorithm', '算法类']
+            ['algorithm', '算法类'],
+            ['change-this', 'call,apply和bind'],
+            ['js-run', 'js运行机制'],
+            ['page-performance', '页面性能'],
+            ['error', '错误监控']
           ]
         }
       ],
@@ -58,6 +62,7 @@ module.exports = {
     }
   },
   plugins: [
+    '@vuepress/medium-zoom',
     '@vuepress/back-to-top',
     [
       '@vuepress/last-updated',
@@ -66,6 +71,7 @@ module.exports = {
           return moment(timestamp).format('YYYY-MM-DD HH:mm:ss')
         }
       }
-    ]
+    ],
+ 
   ]
 }

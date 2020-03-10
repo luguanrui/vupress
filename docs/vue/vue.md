@@ -1,20 +1,58 @@
 ## 什么是MVVM
 
+- Model【模型】指的是后端传递的数据
+- View【视图】指的是所看到的页面
+- ViewModel【视图模型】连接view和model的桥梁
+
+MVVM模式有两个方向：
+- 将`Model`【模型】转化为`View`【视图】。即将后端传递的数据转化成所看到的页面。实现的方式是：`数据绑定`
+- 将`View`【视图】转化为`Model`【模型】。即将所看到的页面转化成后端的数据。实现的方式是：`DOM 事件监听`
+
+这两个方向都实现的，我们称之为数据的双向绑定
+
+总结：在MVVM的框架下，`View`【视图和`Model`【模型】是不能直接通信的。它们通过`ViewModel`【视图模型】来通信，ViewModel通常要实现一个observer观察者，当数据发生变化，ViewModel能够监听到数据的这种变化，然后通知到对应的视图做自动更新，而当用户操作视图，ViewModel也能监听到视图的变化，然后通知数据做改动，这实际上就实现了数据的双向绑定。并且MVVM中的View 和 ViewModel可以互相通信。MVVM流程图如下：
+
 ## 生命周期
 
-答：总共分为8个阶段创建前/后，载入前/后，更新前/后，销毁前/后。
+生命周期图：
+<img class="img" src="../public/vue-lifecycle.png" width="400">
 
-创建前/后： 在beforeCreated阶段，vue实例的挂载元素$el和数据对象data都为undefined，还未初始化。在created阶段，vue实例的数据对象data有了，$el还没有。
+8个阶段：
+- 创建前/后：beforeCreate/created
+- 载入前/后：beforeMount/mounted
+- 更新前/后：beforeUpdate/updated
+- 销毁前/后：beforeDestory/destoryed
 
-载入前/后：在beforeMount阶段，vue实例的$el和data都初始化了，但还是挂载之前为虚拟的dom节点，data.message还未替换。在mounted阶段，vue实例挂载完成，data.message成功渲染。
+生命周期 | 描述
+---|---
+beforeCreate | 组件实例被创建之初，组件的属性生效之前
+created | 组件实例已经完全创建，属性也绑定，但真实dom还没有生成，$el还不可用
+beforeMount | 在挂载开始之前被调用：相关的 render 函数首次被调用
+mounted | el 被新创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子
+beforeUpdate | 组件数据更新之前调用，发生在虚拟 DOM 打补丁之前
+updated | 组件数据更新之后
+beforeDestory | 组件销毁前调用
+destoryed | 组件销毁后调用
+activited | keep-alive专属，组件被激活时调用
+deadctivated | keep-alive专属，组件被销毁时调用
 
-更新前/后：当data变化时，会触发beforeUpdate和updated方法。
+组件加载渲染过程：**beforeCreate-->created-->beforeMount-->mounted**
 
-销毁前/后：在执行destroy方法后，对data的改变不会再触发周期函数，说明此时vue实例已经解除了事件监听以及和dom的绑定，但是dom结构依然存在
+父子组件加载渲染过程：（子组件先走mounted,父组件在mounted）:
+
+**父级beforeCreate-->父级created-->父级beforeMount-->子级beforeCreate->子级created-->子级beforeMount-->子级mounted-->父mounted**
+
+父子组件更新过程：（子级先updated,父级再updated）:
+
+**父级beforeUpdate-->子级beforeUpdate-->子级updated-->父级updated**
+
+销毁过程：（子级先destoryed,父级再destoryed）：
+
+**父级beforeDestory-->子级beforeDestory-->子级destoryed-->父级destoryed**
 
 ## 数据绑定原理
 
-答：vue.js 是采用数据劫持结合发布者-订阅者模式的方式，通过Object.defineProperty()来劫持各个属性的setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。
+采用数据劫持结合发布者-订阅者模式的方式，通过Object.defineProperty()来劫持各个属性的setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调
 
 具体步骤：
 
@@ -32,14 +70,32 @@
 
 ## keep-alive的作用
 
+作用：keep-alive是Vue.js的一个内置组件。它能够把不活动的组件实例保存在内存中，而不是直接将其销毁，它是一个抽象组件，不会被渲染到真实DOM中，也不会出现在父组件链中。
+
+它提供了include与exclude两个属性，允许组件有条件地进行缓存。
+
+Vue.js内部将DOM节点抽象成了一个个的VNode节点，keep-alive组件的缓存也是基于VNode节点的而不是直接存储DOM结构。它将满足条件（include与exclude）的组件在cache对象中缓存起来，在需要重新渲染的时候再将vnode节点从cache对象中取出并渲染。
+
 ## v-if和v-show的区别
 
 ## computed与watch的区别
+
+computed:
+
+计算属性是基于它们的响应式依赖进行缓存的。只在相关响应式依赖发生改变时它们才会重新求值
+计算属性默认只有 getter，不过在需要时你也可以提供一个 setter
+watch:
+
+当需要在数据变化时执行异步或开销较大的操作时,使用watch
 
 ## 虚拟dom与diff算法
 
 ## 组件通信
 
+- 父子组件通信：props/$emit
+- 兄弟组件通信：bus
+- 跨级组件通信：provide / inject，bus，vuex，$attrs/$listeners，$parent / $children与 ref
+  
 ## vue-loader是什么？使用它的用途有哪些
 
 答：解析.vue文件的一个加载器，跟template/js/style转换成js模块。
@@ -118,6 +174,13 @@ Directives: {
 ## Vue中元素的key特性有什么作用
 
 主要是为了高效，准确的更新虚拟dom
+
+- diff算法，就地复用
+
+1. key能够决定节点是否应该被`删除`、`添加`、`修改`，当节点被`删除`、`添加`时，会发生以下事件:
+- 完整地触发组件的生命周期钩子
+- 触发过渡
+2. 对比两个子节点数组时，建立 key-index映射代替遍历查找 sameNode,提高性能
 
 ## 请列举你所知的v-on指令的修饰符
 
@@ -219,4 +282,13 @@ slot插槽，分为匿名插槽，具名插槽，作用域插槽：
 
 - 渲染开销低，因为函数式组件只是函数
 
-## Vue为什么要求在组件的模板中只能有一个根元素？
+### Object.defineProperty()
+
+Object.defineProperty()的缺点：
+- 无法检测到对象属性的新增或删除，解决方案：Vue.set(obj, propertName/index, value)
+- 不能监听数组的变化，因此vue重写了数组操作的方法，比如push，pop，shift，unshift，splice，sort，reverse
+
+Proxy是ES6提供的一个新的API，用于修改某些操作的默认行为
+
+- Proxy直接代理整个对象而非对象属性
+- Proxy也可以监听数组的变化
