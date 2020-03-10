@@ -16,7 +16,7 @@ module.exports = {
       // },
       {
         text: '基础',
-        link: '/js/layout'
+        link: '/base/layout'
       },
       {
         text: 'Vue',
@@ -28,11 +28,12 @@ module.exports = {
       }
     ],
     sidebar: {
-      '/js/': [
+      '/base/': [
         {
           title: '基础',
           collapsable: false,
           children: [
+            ['html', 'html'],
             ['layout', '页面布局'],
             ['css', 'CSS盒模型'],
             ['scope', '作用域和闭包'],
