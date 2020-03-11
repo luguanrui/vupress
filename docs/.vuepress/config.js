@@ -36,7 +36,7 @@ module.exports = {
             ['css', 'css相关'],
             ['scope', '作用域和闭包'],
             ['dom', 'DOM事件'],
-            ['prototype', '原型链'],
+            ['prototype-chain', '原型链'],
             ['communications', '通信类'],
             ['http', 'HTTP'],
             ['safe', '安全类'],
