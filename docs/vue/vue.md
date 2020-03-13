@@ -39,26 +39,18 @@ Vue3.x改用`Proxy`替代`Object.defineProperty`。因为`Proxy`可以直接监�
 ## 生命周期
 
 生命周期图：
+
 <img class="img" src="../public/vue-lifecycle.png" width="400">
 
-8个阶段：
+8个阶段：一个从 Vue 实例的创建到组件销毁的一个的过程
 - 创建前/后：beforeCreate/created
-- 载入前/后：beforeMount/mounted
+- 挂载前/后：beforeMount/mounted
 - 更新前/后：beforeUpdate/updated
 - 销毁前/后：beforeDestory/destoryed
 
-生命周期 | 描述
----|---
-beforeCreate | 组件实例被创建之初，组件的属性生效之前
-created | 组件实例已经完全创建，属性也绑定，但真实dom还没有生成，$el还不可用
-beforeMount | 在挂载开始之前被调用：相关的 render 函数首次被调用
-mounted | el 被新创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子
-beforeUpdate | 组件数据更新之前调用，发生在虚拟 DOM 打补丁之前
-updated | 组件数据更新之后
-beforeDestory | 组件销毁前调用
-destoryed | 组件销毁后调用
-activited | keep-alive专属，组件被激活时调用
-deadctivated | keep-alive专属，组件被销毁时调用
+描述：
+
+<img class="img" src="../public/vue-lifecycle2.jpeg" width="600">
 
 组件加载渲染过程：**beforeCreate-->created-->beforeMount-->mounted**
 
@@ -390,13 +382,13 @@ Vue3.x借鉴了`ivi算法`和 `inferno算法`：在创建VNode时就确定其类
 
 需要在新旧 children 的节点中保存映射关系，以便能够在旧 children 的节点中找到可复用的节点。key也就是children中节点的唯一标识。
 
-## SSR
+## SSR(Serve Side Render)
 
 SSR也就是服务端渲染，也就是将Vue在客户端把标签渲染成HTML的工作放在服务端完成，然后再把html直接返回给客户端。
 
 优点：
 
-- 更好的SEO
+- SPA 框架 SEO 的解决方案（nuxt）
 - 首屏加载速度更快等优点
 
 缺点：
