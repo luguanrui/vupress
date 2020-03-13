@@ -21,6 +21,18 @@ module.exports = {
         link: '/vue/vue'
       },
       {
+        text: 'Webpack',
+        link: '/webpack/webpack'
+      },
+      {
+        text: 'Typescript',
+        link: '/typescript/typescript'
+      },
+      {
+        text: 'Node',
+        link: '/node/node'
+      },
+      {
         text: 'GitHub',
         link: 'https://github.com/luguanrui?tab=repositories'
       }
@@ -58,6 +70,27 @@ module.exports = {
             ['vuex', 'vuex']
           ]
         }
+      ],
+      '/webpack/': [
+        {
+          title: 'webpack',
+          collapsable: false,
+          children: []
+        }
+      ],
+      '/typescript/': [
+        {
+          title: 'typescript',
+          collapsable: false,
+          children: []
+        }
+      ],
+      '/node/': [
+        {
+          title: 'node',
+          collapsable: false,
+          children: []
+        }
       ]
     }
   },
@@ -71,7 +104,6 @@ module.exports = {
           return moment(timestamp).format('YYYY-MM-DD HH:mm:ss')
         }
       }
-    ],
- 
+    ]
   ]
 }

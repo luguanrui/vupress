@@ -21,15 +21,17 @@ for (var i = 1; i <= 5; i++) {
 ```
 
 方案一：使用闭包
+
 ```js
 for (var i = 1; i <= 5; i++) { 
-(function(j) {
-    setTimeout(function() { console.log(j)}, j *1000)
-})(i)
+    (function(j) {
+        setTimeout(function() { console.log(j)}, j *1000)
+    })(i)
 }
 ```
 
 方案二：setTimeout多穿一个参数
+
 ```js
 for (var i = 1; i <= 5; i++) { 
     setTimeout(function(j) {
@@ -39,6 +41,7 @@ for (var i = 1; i <= 5; i++) {
 ```
 
 方案三：使用let
+
 ```js
 for (let i = 1; i <= 5; i++) { 
 setTimeout(function() {
@@ -46,3 +49,10 @@ setTimeout(function() {
   }, i * 1000)
 }
 ```
+
+## let var const 有什么区别
+
+1. let/const定义的变量不会出现变量提升，而var定义的变量会提升
+2. 相同作用域中，let和const不能出现重复声明。而var就可以
+3. const后者声明的变量不能再次赋值
+4. const声明的引用类型可以更改，因为const声明的引用类型的指针指向的地址不可以改变，指向地址的内容是可以改变的
