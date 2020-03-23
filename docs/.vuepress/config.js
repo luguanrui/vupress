@@ -2,6 +2,7 @@ const moment = require('moment')
 
 module.exports = {
   title: 'Documents',
+  dest: 'dist',
   description: 'this is my docuemnts',
   head: [['link', { rel: 'icon', href: '/logo.png' }]],
   themeConfig: {
