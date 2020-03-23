@@ -436,3 +436,22 @@ SSR也就是服务端渲染，也就是将Vue在客户端把标签渲染成HTML�
 [参考](https://juejin.im/post/5e04411f6fb9a0166049a073#heading-7)
 
 ## vue原理（手写代码，实现数据劫持）
+
+```js
+```
+
+## 实现a===1 && a===2 && a===3返回true
+
+```js
+var  _a = 1;
+Object.defineProperty(this,'a',{
+    get:function(){
+        return _a++
+    }
+})
+console.log(a===1 && a===2 && a===3)
+```
+
+## 实现一个虚拟DOM
+
+https://github.com/luguanrui/virtualDOM
