@@ -3,11 +3,11 @@ const moment = require('moment')
 module.exports = {
   title: 'Documents',
   dest: 'dist',
-  description: 'this is my docuemnts',
+  description: 'this is my documents',
   head: [['link', { rel: 'icon', href: '/logo.png' }]],
   themeConfig: {
     lastUpdated: '上次更新',
-    sidebarDepth: 0,
+    sidebarDepth: 2,
     nav: [
       // {
       //   text: '首页',
@@ -19,7 +19,7 @@ module.exports = {
       },
       {
         text: 'Vue',
-        link: '/vue/vue'
+        link: '/vue/vue/'
       },
       {
         text: 'Webpack',

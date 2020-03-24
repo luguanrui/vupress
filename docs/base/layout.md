@@ -1,15 +1,16 @@
-## 页面布局
+## 三栏布局
 
 题目：假设高度已知，请写出三栏布局，其中左栏，右栏宽度各300px，中间自适应
 
 5种方案：
+
 - flex布局
 - 绝对定位布局absolute
 - 浮动布局float
 - 表格布局table
 - 网格布局grid
 
-1. flex布局
+### flex布局
 
 ```css
 .content{
@@ -26,7 +27,7 @@
 }
 ```
 
-2. 绝对定位布局absolute
+### 绝对定位布局absolute
 
 ```css
 .left,.right,.center {
@@ -45,7 +46,8 @@
     right: 300px;
 }
 ```
-3. 浮动布局float
+
+### 浮动布局float
 
 ```css
 .left {
@@ -58,7 +60,7 @@
 }
 ```
 
-4. 表格布局table
+### 表格布局table
 
 ```css
 .content {
@@ -77,7 +79,7 @@
 }
 ```
 
-5. 网格布局grid
+### 网格布局grid
 
 ```css
 .content {

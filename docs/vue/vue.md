@@ -1,78 +1,24 @@
 ## 什么是MVVM
 
-MVVM是`Model-View-ViewModel`缩写，也就是把MVC中的Controller演变成ViewModel。
+MVVM是`Model-View-ViewModel`缩写，也就是把MVC中的Controller演变成ViewModel
+
 - `Model`【模型】层代表数据模型
 - `View`【视图】代表UI组件
 - `ViewModel`【视图模型】是View和Model层的桥梁
 
-数据会绑定到viewModel层并自动将数据渲染到页面中，视图变化的时候会通知viewModel层更新数据。
+数据会绑定到`ViewModel`层并自动将数据渲染到页面中，视图变化的时候会通知`ViewModel`层更新数据。
 
 MVVM模式有两个方向：
-- 将`Model`【模型】转化为`View`【视图】。即将后端传递的数据转化成所看到的页面。实现的方式是：`数据绑定`
-- 将`View`【视图】转化为`Model`【模型】。即将所看到的页面转化成后端的数据。实现的方式是：`DOM 事件监听`
+
+- 将`Model`转化为`View`，实现方式：`数据绑定`（即将后端传递的数据转化成所看到的页面）
+- 将`View`转化为`Model`，实现方式：`DOM 事件监听`（即将所看到的页面转化成后端的数据）
 - 这两个方向都实现的，我们称之为数据的双向绑定
 
-总结：在MVVM的框架下，`View`【视图】和`Model`【模型】是不能直接通信的。它们通过`ViewModel`【视图模型】来通信，ViewModel通常要实现一个observer观察者，当数据发生变化，ViewModel能够监听到数据的这种变化，然后通知到对应的视图做自动更新，而当用户操作视图，ViewModel也能监听到视图的变化，然后通知数据做改动，这实际上就实现了数据的双向绑定。
+总结：在MVVM的框架下，`View`和`Model`是不能直接通信的。它们通过`ViewModel`来通信，`ViewModel`通常要实现一个`observer`观察者，当数据发生变化，`ViewModel`能够监听到数据的这种变化，然后通知到对应的视图做自动更新，而当用户操作视图，`ViewModel`也能监听到视图的变化，然后通知数据做改动，这实际上就实现了数据的双向绑定。
 
-## Vue2.x响应式数据原理
+## Vue2.x数据绑定与响应式数据原理
 
 Vue在初始化数据时，会使用`Object.defineProperty`重新定义data中的所有属性，当页面使用对应属性时，首先会进行`依赖收集`(收集当前组件的watcher)，如果属性发生变化会通知相关依赖进行更新操作(`发布订阅`)
-
-## Vue3.x响应式数据原理
-
-Vue3.x改用`Proxy`替代`Object.defineProperty`。因为`Proxy`可以直接监听对象和数组的变化，并且有多达13种拦截方法。并且作为新标准将受到浏览器厂商重点持续的性能优化
-
-## Proxy只会代理对象的第一层，那么Vue3又是怎样处理这个问题的
-
-判断当前`Reflect.get`的返回值是否为`Object`，如果是则再通过`reactive`方法做代理， 这样就实现了`深度观测`
-
-## 监测数组的时候可能触发多次get/set，那么如何防止触发多次
-
-我们可以判断`key`是否为当前被代理对象`target`自身属性，也可以判断`旧值与新值`是否相等，只有满足以上两个条件之一时，才有可能执行`trigger`
-
-## vue2.x中如何监测数组变化
-
-使用了函数劫持的方式，`重写了数组的方法`，Vue将data中的数组进行了原型链重写，指向了自己定义的数组原型方法。这样当调用数组api时，可以通知依赖更新。如果数组中包含着引用类型，会对数组中的引用类型再次递归遍历进行监控。这样就实现了监测数组变化
-
-[一文带你彻底搞懂JavaScript原型链](https://juejin.im/post/5d31ea79e51d457778117452)
-
-## 生命周期
-
-生命周期图：
-
-<img class="img" src="../public/vue-lifecycle.png" width="400">
-
-8个阶段：一个从 Vue 实例的创建到组件销毁的一个的过程
-- 创建前/后：beforeCreate/created
-- 挂载前/后：beforeMount/mounted
-- 更新前/后：beforeUpdate/updated
-- 销毁前/后：beforeDestory/destoryed
-
-描述：
-
-<img class="img" src="../public/vue-lifecycle2.jpeg" width="600">
-
-组件加载渲染过程：**beforeCreate-->created-->beforeMount-->mounted**
-
-## 父子组件的渲染过程
-
-父子组件加载渲染过程：（子组件先走mounted,父组件在mounted）:
-
-**父级beforeCreate-->父级created-->父级beforeMount-->子级beforeCreate->子级created-->子级beforeMount-->子级mounted-->父mounted**
-
-## 父子组件的更新过程
-
-父子组件更新过程：（子级先updated,父级再updated）:
-
-**父级beforeUpdate-->子级beforeUpdate-->子级updated-->父级updated**
-
-## 父子组件的销毁过程
-
-销毁过程：（子级先destoryed,父级再destoryed）：
-
-**父级beforeDestory-->子级beforeDestory-->子级destoryed-->父级destoryed**
-
-## 数据绑定原理
 
 采用`数据劫持`结合`发布者-订阅者模式`的方式，通过`Object.defineProperty()`来劫持各个属性的`setter`，`getter`，在数据变动时发布消息给订阅者，触发相应的监听回调
 
@@ -90,11 +36,74 @@ Vue3.x改用`Proxy`替代`Object.defineProperty`。因为`Proxy`可以直接监�
 
 第四步：MVVM作为数据绑定的入口，整合Observer、Compile和Watcher三者，通过Observer来监听自己的model数据变化，通过Compile来解析编译模板指令，最终利用Watcher搭起Observer和Compile之间的通信桥梁，达到数据变化 -> 视图更新；视图交互变化(input) -> 数据model变更的双向绑定效果。
 
+## Vue3.x响应式数据原理
+
+Vue3.x改用`Proxy`替代`Object.defineProperty`。因为`Proxy`可以直接监听对象和数组的变化，并且有多达13种拦截方法。并且作为新标准将受到浏览器厂商重点持续的性能优化
+
+## Proxy只会代理对象的第一层，那么Vue3又是怎样处理这个问题的
+
+判断当前`Reflect.get`的返回值是否为`Object`，如果是则再通过`reactive`方法做代理， 这样就实现了`深度观测`
+
+## 监测数组的时候如何防止触发多次get/set
+
+我们可以判断`key`是否为当前被代理对象`target`自身属性，也可以判断`旧值与新值`是否相等，只有满足以上两个条件之一时，才有可能执行`trigger`
+
+## vue2.x中如何监测数组变化
+
+使用了函数劫持的方式，`重写了数组的方法`，Vue将data中的数组进行了原型链重写，指向了自己定义的数组原型方法，包含如下方法：
+
+- push
+- pop
+- shift
+- unshift
+- splice
+- sort
+- reverse
+
+这样当调用数组api时，可以通知依赖更新。如果数组中包含着引用类型，会对数组中的引用类型再次递归遍历进行监控。这样就实现了监测数组变化
+
+## 生命周期
+
+生命周期图：
+
+<img class="img" src="../public/vue-lifecycle.png" width="400">
+
+8个阶段：Vue 实例的创建到组件销毁的一个的过程
+
+- 创建前/后：beforeCreate/created
+- 挂载前/后：beforeMount/mounted
+- 更新前/后：beforeUpdate/updated
+- 销毁前/后：beforeDestory/destoryed
+
+描述：
+
+<img class="img" src="../public/vue-lifecycle2.jpeg" width="600" />
+
+组件加载渲染过程：**beforeCreate-->created-->beforeMount-->mounted**
+
+## 父子组件的渲染过程
+
+父子组件加载渲染过程：（子组件先走mounted,父组件在mounted）:
+
+**父级beforeCreate-->父级created-->父级beforeMount**-->子级beforeCreate->子级created-->子级beforeMount-->子级mounted-->**父级mounted**
+
+## 父子组件的更新过程
+
+父子组件更新过程：（子级先updated,父级再updated）:
+
+**父级beforeUpdate**-->子级beforeUpdate-->子级updated-->**父级updated**
+
+## 父子组件的销毁过程
+
+销毁过程：（子级先destoryed,父级再destoryed）：
+
+**父级beforeDestory**-->子级beforeDestory-->子级destoryed-->**父级destoryed**
+
 ## keep-alive的作用
 
-- keep-alive可以实现组件缓存，当组件切换时不会对当前组件进行卸载。
-- 常用的两个属性include/exclude，允许组件有条件的进行缓存。
-- 两个生命周期activated/deactivated，用来得知当前组件是否处于活跃状态。
+- keep-alive可以实现`组件缓存`，当组件切换时不会对当前组件进行卸载。
+- 常用的两个属性`include`/`exclude`，允许组件有条件的进行缓存。
+- 两个生命周期`activated`/`deactivated`，用来得知当前组件是否处于活跃状态。
 - keep-alive的中还运用了LRU(Least Recently Used)算法。
 
 ## v-if和v-show的区别
@@ -191,7 +200,7 @@ v-for比v-if的优先级高，一般会采用computed计算属性
 
 声明自定义指令的两种方式：
 1. 全局
-   
+
 ```js
 let Opt = {
     bind:function(el,binding,vnode){ },
@@ -204,6 +213,7 @@ Vue.directive('指令名称', Opt)
 ```
 
 2. 局部：钩子函数directives中进行声明
+
 ```js
 Directives: {
  Demo:  Opt

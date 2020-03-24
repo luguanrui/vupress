@@ -1,11 +1,11 @@
-## call,apply和bind
+<!-- ## 改变的this指向 -->
 
 特点：
 - 都是改变当前函数的this指向
 - call和apply立即执行当前函数
 - bind并不执行当前函数,而是返回一个函数
 
-#### call
+## call
 
 调用方法：
 - func.call(thisArg, arg1, arg2, ...)
@@ -27,7 +27,7 @@ Function.prototype._call = function(context) {
 }
 ```
 
-#### apply
+## apply
 
 调用方法：
 - func.apply(thisArg, [argsArray])
@@ -48,13 +48,13 @@ Function.prototype._apply = function (context) {
         result = context.fn()
     }
     // 删除函数
-    delete context.fn 
+    delete context.fn
     // 返回执行函数
     return result
 }
 ```
 
-#### bind
+## bind
 
 调用方法：
 - func.bind(thisArg[, arg1[, arg2[, ...]]])
