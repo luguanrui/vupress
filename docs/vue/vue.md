@@ -40,6 +40,18 @@ Vue在初始化数据时，会使用`Object.defineProperty`重新定义data中�
 
 Vue3.x改用`Proxy`替代`Object.defineProperty`。因为`Proxy`可以直接监听对象和数组的变化，并且有多达13种拦截方法。并且作为新标准将受到浏览器厂商重点持续的性能优化
 
+### Object.defineProperty()
+
+缺点：
+
+- 无法检测到对象属性的新增或删除，解决方案：Vue.set(obj, propertName/index, value)
+- 不能监听数组的变化，因此vue重写了数组操作的方法，比如push，pop，shift，unshift，splice，sort，reverse
+
+Proxy是ES6提供的一个新的API，用于修改某些操作的默认行为
+
+- Proxy直接代理整个对象而非对象属性
+- Proxy也可以监听数组的变化
+
 ## Proxy只会代理对象的第一层，那么Vue3又是怎样处理这个问题的
 
 判断当前`Reflect.get`的返回值是否为`Object`，如果是则再通过`reactive`方法做代理， 这样就实现了`深度观测`
@@ -106,19 +118,27 @@ Vue3.x改用`Proxy`替代`Object.defineProperty`。因为`Proxy`可以直接监�
 - 两个生命周期`activated`/`deactivated`，用来得知当前组件是否处于活跃状态。
 - keep-alive的中还运用了LRU(Least Recently Used)算法。
 
+## keep-alive的生命周期钩子
+
+1.activated：当组件激活时，钩子触发的顺序是`created->mounted->activated`
+
+2.deactivated: 组件停用时会触发deactivated，当再次前进或者后退的时候只触发activated
+
+页面第一次进入，钩子的触发顺序`created-> mounted-> activated`，退出时触发deactivated。当再次进入（前进或者后退）时，只触发`activated`
+
 ## v-if和v-show的区别
 
 当条件不成立时，v-if不会渲染DOM元素，v-show操作的是样式(display)，切换当前DOM的显示和隐藏。
 
 ## computed与watch的区别
 
-Computed本质是一个`具备缓存的watcher`，依赖的属性发生变化就会更新视图，并且计算属性默认只有`getter`，不过在需要时你也可以提供一个 `setter`
+1. computed本质是一个`具备缓存的watcher`，依赖的属性发生变化就会更新视图，并且计算属性默认只有`getter`，不过在需要时你也可以提供一个 `setter`
 
 适用于场景：
 - 计算比较消耗性能的计算场景
 - 当表达式过于复杂时，在模板中放入过多逻辑会让模板难以维护，可以将复杂的逻辑放入计算属性中处理。
 
-Watch没有缓存性，更多的是观察的作用，可以监听某些数据执行回调。当我们需要深度监听对象中的属性时，可以打开deep：true选项，这样便会对对象中的每一项进行监听。这样会带来性能问题，优化的话可以使用字符串形式监听，如果没有写到组件中，不要忘记使用unWatch手动注销
+2. watch没有缓存性，更多的是观察的作用，可以监听某些数据执行回调。当我们需要深度监听对象中的属性时，可以打开`deep：true`选项，这样便会对对象中的每一项进行监听。这样会带来性能问题，优化的话可以使用字符串形式监听，如果没有写到组件中，不要忘记使用unWatch手动注销
 
 ## 组件通信
 
@@ -148,7 +168,7 @@ Watch没有缓存性，更多的是观察的作用，可以监听某些数据执
 
 ## Vue.nextTick()
 
-在`下次 DOM 更新循环结束之后`执行`延迟回调`（简单的理解是：当数据更新了，在dom中渲染后，自动执行该函数）。nextTick主要使用了`宏任务`和`微任务`。根据执行环境分别尝试采用：
+在`下次 DOM 更新循环结束之后`执行`延迟回调`（简单的理解是：当数据更新了，在DOM中渲染后，自动执行该函数）。nextTick主要使用了`宏任务`和`微任务`。根据执行环境分别尝试采用：
 
 - Promise
 - MutationObserver
@@ -164,19 +184,7 @@ Watch没有缓存性，更多的是观察的作用，可以监听某些数据执
 
 原理：
 
-Vue是异步执行dom更新的，一旦观察到数据变化，Vue就会开启一个队列，然后把在同一个事件循环 (event loop) 当中观察到数据变化的 watcher 推送进这个队列。如果这个watcher被触发多次，只会被推送到队列一次。这种缓冲行为可以有效的去掉重复数据造成的不必要的计算和DOm操作。而在下一个事件循环时，Vue会清空队列，并进行必要的DOM更新
-
-## 什么是Vue CLI
-
-vue-cli是vue.js的脚手架，用于自动生成vue.js+webpack的项目模板
-
-## 在Vue中，有几个生命周期钩子与\<keep-alive>元素有关
-
-1.activated：当组件激活时，钩子触发的顺序是created->mounted->activated
-
-2.deactivated: 组件停用时会触发deactivated，当再次前进或者后退的时候只触发activated
-
-页面第一次进入，钩子的触发顺序created-> mounted-> activated，退出时触发deactivated。当再次进入（前进或者后退）时，只触发activated
+Vue是异步执行DOM更新的，一旦观察到数据变化，Vue就会开启一个队列，然后把在同一个事件循环 (event loop) 当中观察到数据变化的 watcher 推送进这个队列。如果这个watcher被触发多次，只会被推送到队列一次。这种缓冲行为可以有效的去掉重复数据造成的不必要的计算和DOM操作。而在下一个事件循环时，Vue会清空队列，并进行必要的DOM更新
 
 ## 在Vue渲染模板时，如何才能保留模板中的HTML注释
 
@@ -222,7 +230,7 @@ Directives: {
 
 ## Vue中元素的key特性有什么作用
 
-主要是为了高效，准确的更新虚拟dom
+主要是为了高效，准确的更新虚拟DOM
 
 - diff算法，就地复用
 
@@ -248,19 +256,71 @@ Directives: {
 ```
 - .passive
 
-## Vue为v-model指令提供了哪些修饰符
+## v-model指令提供了哪些修饰符
 
 - .lazy：懒加载修饰符
 - .number：转为数字类型
 - .trim：过滤首尾空格
 
-## Vue的:class可接收哪几种类型的值
+## .native修饰符有什么作用
 
-对象，数组
+作用就是把一个vue组件转化为一个普通的HTML标签，并且该修饰符对普通HTML标签是没有任何作用的。
 
-## Vue的:style可接收哪几种类型的值
+## .sync修饰符有什么作用
 
-对象，数组
+对prop进行“双向绑定”，使得子组件可以修改父组件的数据
+
+## class可接收哪几种类型的值
+
+对象:
+
+```html
+<div class="static" :class="{ active: isActive, 'text-danger': hasError }"></div>
+```
+
+数组:
+
+```html
+<div :class="[isActive ? activeClass : '', errorClass]"></div>
+<!-- 或者数组中写对象 -->
+<div :class="[{ active: isActive }, errorClass]"></div>
+```
+
+## style可接收哪几种类型的值
+
+对象：
+
+```html
+<div :style="styleObject"></div>
+```
+
+```js
+data: {
+  styleObject: {
+    color: 'red',
+    fontSize: '13px'
+  }
+}
+```
+
+数组:
+
+```html
+<div v-bind:style="[baseStyles, overridingStyles]"></div>
+```
+
+```js
+data: {
+  baseStyles: {
+    color: 'red',
+    fontSize: '13px'
+  },
+  overridingStyles: {
+    color: 'red',
+    fontSize: '13px'
+  }
+}
+```
 
 ## 什么是Vue的单文件组件
 
@@ -268,7 +328,7 @@ vuejs 自定义了一种.vue文件，可以把html, css, js 写到一个文件�
 
 ## Vue.extend()方法有什么作用
 
-组件构造器,使用基础Vue构造器，创建一个“子类”，参数是一个包含组件选项的对相关
+extend是vue提供的一个全局方法，使用基础 Vue 构造器，创建一个“子类”。参数是一个包含组件选项的对象。
 
 ## 在Vue中，组件的命名方式有哪些
 
@@ -281,24 +341,17 @@ vuejs 自定义了一种.vue文件，可以把html, css, js 写到一个文件�
 - String
 - Number
 - Boolean
-- Function
-- Object
 - Array
+- Object
+- Date
+- Function
 - Symbol
-
-## .native修饰符有什么作用
-
-作用就是把一个vue组件转化为一个普通的HTML标签，并且该修饰符对普通HTML标签是没有任何作用的。
-
-## .sync修饰符有什么作用
-
-对prop进行“双向绑定”，使得子组件可以修改父组件的数据
 
 ## 在Vue中，如何能直接访问父组件、子组件和根实例
 
 访问父组件`$parent`,访问子组件`$children`,访问根实例`$root`
 
-## Vue中的ref和$refs有什么作用？
+## Vue中的`ref`和`$refs`有什么作用
 
 ref 被用来给元素或子组件注册引用信息。引用信息将会注册在父组件的 $refs 对象上。如果在普通的 DOM 元素上使用，引用指向的就是 DOM 元素
 
@@ -311,6 +364,7 @@ slot插槽，分为匿名插槽，具名插槽，作用域插槽：
 - 作用域插槽：父组件提供样式，子组件提供提供内容，在slot上绑定数据，子组件的值可以传给父组件使用，父组件展示子组件有三种，flex显示，列表显示，直接显示，使用slot-scope必须使用template。scope返回值是slot标签上放回所有属性值，并且是一个对象形式保存起来的，slot有两个属性，一个row，一个index
 
 ## 如何理解Vue的函数式组件
+
 函数式组件特点：
 
 - 没有管理任何状态
@@ -327,17 +381,6 @@ slot插槽，分为匿名插槽，具名插槽，作用域插槽：
 
 - 渲染开销低，因为函数式组件只是函数
 
-### Object.defineProperty()
-
-Object.defineProperty()的缺点：
-- 无法检测到对象属性的新增或删除，解决方案：Vue.set(obj, propertName/index, value)
-- 不能监听数组的变化，因此vue重写了数组操作的方法，比如push，pop，shift，unshift，splice，sort，reverse
-
-Proxy是ES6提供的一个新的API，用于修改某些操作的默认行为
-
-- Proxy直接代理整个对象而非对象属性
-- Proxy也可以监听数组的变化
-
 ## 组件中的data为什么是一个函数
 
 一个组件被复用多次的话，也就会创建多个实例。本质上，这些实例用的都是同一个构造函数。如果data是对象的话，对象属于引用类型，会影响到所有的实例。所以为了保证组件不同的实例之间data不冲突，data必须是一个函数
@@ -346,6 +389,10 @@ Proxy是ES6提供的一个新的API，用于修改某些操作的默认行为
 
 v-model本质就是一个语法糖，可以看成是value + input方法的语法糖。 可以通过model属性的prop和event属性来进行自定义。原生的v-model，会根据标签的不同生成不同的事件和属性。
 
+v-model会把它关联的响应式数据，动态地绑定到表单元素的value属性上，然后监听表单元素的input事件：当v-model绑定的响应数据发生变化时，表单元素的value值也会同步变化；当表单元素接受用户的输入时，input事件会触发，input的回调逻辑会把表单元素value最新值同步赋值给v-model绑定的响应式数据。
+
+[参考](https://segmentfault.com/a/1190000021039085?utm_source=tag-newest#item-4-1)
+
 ## Vue事件绑定原理
 
 原生事件绑定是通过`addEventListener`绑定给真实元素的，组件事件绑定是通过Vue自定义的`$on`实现的。
@@ -353,6 +400,7 @@ v-model本质就是一个语法糖，可以看成是value + input方法的语法
 ## Vue模版编译原理
 
 简单说，Vue的编译过程就是将`template`转化为`render函数`的过程。会经历以下阶段：
+
 - 生成AST树
 - 优化
 - codegen
@@ -402,6 +450,7 @@ SSR也就是服务端渲染，也就是将Vue在客户端把标签渲染成HTML�
 - 首屏加载速度更快等优点
 
 缺点：
+
 - 开发条件会受到限制，服务器端渲染只支持beforeCreate和created两个钩子
 - 当我们需要一些外部扩展库时需要特殊处理
 - 服务端渲染应用程序也需要处于Node.js的运行环境
