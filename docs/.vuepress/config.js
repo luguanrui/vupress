@@ -15,7 +15,7 @@ module.exports = {
       // },
       {
         text: '基础',
-        link: '/base/html'
+        link: '/base/'
       },
       {
         text: 'Vue',
