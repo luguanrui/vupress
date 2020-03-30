@@ -15,7 +15,7 @@ module.exports = {
       // },
       {
         text: '基础',
-        link: '/base/'
+        link: '/base/html/'
       },
       {
         text: 'Vue',
@@ -54,10 +54,11 @@ module.exports = {
             ['http', 'HTTP'],
             ['safe', '安全类'],
             ['algorithm', '算法类'],
-            ['change-this', 'call,apply和bind'],
             ['js-run', 'js运行机制'],
             ['page-performance', '页面性能'],
-            ['error', '错误监控']
+            ['error', '错误监控'],
+            ['change-this', 'call,apply和bind'],
+            ['debounce-throttle', '防抖和节流']
           ]
         }
       ],
