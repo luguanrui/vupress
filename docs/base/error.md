@@ -1,20 +1,18 @@
 ## 前端错误的分类
 
-- 即使运行错误：代码错误
+- 即时运行错误：代码错误
 - 资源加载错误：js，css，图片加载等错误
 
 ## 错误的捕获方式
 
-1. 即使运行错误的捕获方式：
+1. 即时运行错误的捕获方式：
+   - try...catch
+   - window.onerror
 
-- try...catch
-- window.onerror
-
-1. 资源加载错误的捕获方式：
-
-- object.onerror
-- performance.getEntries()，返回一个数组
-- Error事件捕获
+2. 资源加载错误的捕获方式：
+   - object.onerror
+   - performance.getEntries()，返回一个数组
+   - Error事件捕获
     ```js
     window.addEventListener('error',function(e){
         console.log('捕获错误',e)
@@ -27,8 +25,8 @@
 
 ## 处理方式
 
-1. 在script标签增加crossorigin属性
-2. 设置js资源响应头Access-Control-Allow-Origin:*
+1. 在script标签增加`crossorigin`属性
+2. 设置js资源响应头`Access-Control-Allow-Origin:*`
 
 ## 上报错误的基本原理
 

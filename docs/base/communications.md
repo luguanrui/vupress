@@ -4,7 +4,7 @@
 
 同源策略限制从一个源加载的文件或者脚本如何与来自另一个源的资源进行交互。这是一个用于隔离潜在恶意文件的关键的安全机制。（源包含：协议+域名+端口）
 
-限制：
+同源策略有哪些限制：
 - Cookie,LocalStrorage和IndexDB无法读取
 - DOM无法获取
 - AJAX请求不能发送
@@ -25,13 +25,15 @@
 实现：
 ```js
 function ajax(url){
-    var xhr = window.XMLHttpRequest ? newXMLHttpRequest() : ActiveXObject("microsoft.XMLHttp")
-    xhr.open("get",url,true);
+    var xhr = window.XMLHttpRequest 
+              ? new XMLHttpRequest() 
+              : new ActiveXObject("Microsoft.XMLHTTP")
+    xhr.open("get", url, true);
     xhr.send();
-    xhr.onreadysattechange = () =>{
+    xhr.onreadystatechange = () =>{
         if(xhr.readystate == 4){
             if(xhr.status == 200){
-                var data = xhr.responseTEXT;
+                var data = xhr.responseText;
                 return data;
             }
         }

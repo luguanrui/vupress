@@ -1,4 +1,17 @@
-## 原型链
+## 构造函数与原型链
+
+什么是原型：
+
+- 所有**引用类型**都有一个`__proto__`(隐式原型)属性，属性值是一个普通的对象
+- 所有**函数**都有一个`prototype`(显示原型)属性，属性值是一个普通的对象
+- 所有引用类型的`__proto__`属性指向它构造函数的`prototype`
+
+什么是原型链：
+
+- 当访问一个对象的某个属性时，会先在这个对象本身属性上查找，
+- 如果没有找到，则会去它的`__proto__`隐式原型上查找，即它的构造函数的`prototype`，
+- 如果还没有找到就会再在`构造函数的prototype的__proto__`中查找，
+- 这样一层一层向上查找就会形成一个链式结构，我们称为原型链。
 
 ### 创建对象有几种方法
 
@@ -14,13 +27,13 @@
     var M = function(name){this.name = name}
     var o3 = new M('o3')
     ``` 
-3. **Object.create()**
+3. **Object.create()**，创建一个对象并继承原型对象
     
     ```js
     var p = {name: 'p'}
     var o4 = Object.create(p)
     ```
-> 说明：Object.create(null) 创建的对象是一个空对象，在该对象上没有继承 Object.prototype 原型链上的属性或者方法
+> Object.create(null) 创建的对象是一个空对象，在该对象上没有继承 Object.prototype 原型链上的属性或者方法
 
 ### 原型、构造函数、实例、原型链
 
@@ -38,7 +51,7 @@
     ```js
     M.prototype === new M().__proto__
     ```
-### instanceof的原理是什么
+## instanceof的原理是什么
 
 <img src="https://note.youdao.com/yws/api/personal/file/WEB011701df82f383c5b84ba0d992c9fda1?method=download&shareKey=2bd0ecabd74bb996d9d0c2480588d7a6"/>
 
@@ -50,7 +63,7 @@ obj instanceof Object
 
 原理：判断实例对象的`__proto__`和构造函数的`prototype`是否是同一个引用(new M().__proto__ === M.prototype)
 
-### new运算符
+## new运算符
 
 问题：理解创建一个对象如何关联上一个实例对象？
 
@@ -84,9 +97,9 @@ M.prototype.walk = function(console.log('walk')) // 在M的原型上增加一个
 o6.walk()
 ```
 
-### 面向对象类oop
+## 面向对象类oop
 
-#### 类与实例
+### 类与实例
 
 1. 类的声明：构造函数、es6的class
  
@@ -111,57 +124,57 @@ o6.walk()
     new Animal2()
     ```
 
-#### 类与继承(通过`原型链`实现继承)
+### 类与继承(通过`原型链`实现继承)
 
-- 如何实现继承
+#### 如何实现继承
 
-    当试图得到一个对象的某个属性时，如果这个对象本身没有这个属性，那么会去它的__proto__(即构造函数的prototype)中去找
+当试图得到一个对象的某个属性时，如果这个对象本身没有这个属性，那么会去它的`__proto__`(即构造函数的prototype)中去找
 
-- 继承的几种方式
+#### 继承的几种方式
 
 1. 借助`构造函数`实现继承
     
-    方法：子类构造函数中执行父类构造函数（` Parent1.call(this) `）
+    方法：子类构造函数中执行父类构造函数（` Parent.call(this) `）
 
-    缺点：继承不了父类构造函数原型对象`（Parent1.prototype）`上的属性和方法
+    缺点：继承不了父类构造函数原型对象`（Parent.prototype）`上的属性和方法
     
     ```js
-    function Parent1() {
+    function Parent() {
         this.name = 'Parent1'
     }
-    // 缺点：继承不了父类`原型对象（Parent1.prototype）`上的属性和方法
-    Parent1.prototype.say = function() {}
-    function Child1() {
-        Parent1.call(this) // 或者使用apply
-        this.type = 'Child1'
+    // 缺点：继承不了父类`原型对象（Parent.prototype）`上的属性和方法
+    Parent.prototype.say = function() {}
+    function Child() {
+        Parent.call(this) // 或者使用apply
+        this.type = 'Child'
     }
     // 实例化Child1
-    console.log(new Child1)
+    console.log(new Child)
     ```
     
 2. 借助`原型链`实现继承：弥补通过构造函数继承的缺点
     
-    方法：将父类构造函数的实例赋值给子类构造函数的原型对象（`Child2.prototype = new Parent2()`）
+    方法：将父类构造函数的实例赋值给子类构造函数的原型对象（`Child.prototype = new Parent()`）
 
-    原因：子类Child2.prototype赋值父类的实例new Parent2()，当子类实例化时，`子类实例的__proto__`就等于`子类构造函数的prototype`，`子类实例的__proto__`等于`父类的实例`，因此实现了继承
+    原因：子类Child.prototype赋值父类的实例new Parent()，当子类实例化时，`子类实例的__proto__`就等于`子类构造函数的prototype`，`子类实例的__proto__`等于`父类的实例`，因此实现了继承
 
     缺点：如果实例化两个子类构造函数，其中一个子类构造函数的原型上的方法和属性改变，另一个实例也会相应改变
 
     ```js
-    function Parent2() {
+    function Parent() {
         this.name = 'Parent2'
         this.play = [1,2,3]
     }
-    function Child2() {
+    function Child() {
         this.type = 'Child2'
     }
-    Child2.prototype = new Parent2()
+    Child.prototype = new Parent()
     // 实例化Child1
-    console.log(new Child2)
+    console.log(new Child)
     
     // 缺点：改变s1原型对象上的属性和方法会影响到s2对象，原因是s1和s2的__proto__的指向相同（s1.__proto__ === s2.__proto__）
-    var s1 = new Child2()
-    var s2 = new Child2()
+    var s1 = new Child()
+    var s2 = new Child()
     console.log(s1.play,s2.play)
     s1.play.push(4)
     console.log(s1.play,s2.play)
@@ -169,69 +182,76 @@ o6.walk()
     
 3. 组合方式,组合构造函数和原型链两种方式
     
-    方法：在子类构造函数中执行父类构造函数，然后将父类的构造函数的实例赋值给子类的原型对象
+    方法：
+    - 在子类构造函数中执行父类构造函数，
+    - 然后将父类的构造函数的实例赋值给子类的原型对象
 
     缺点：父类构造函数执行了两次
 
     ```js
-    function Parent3() {
+    function Parent() {
         this.name = 'Parent3'
         this.play = [1,2,3]
     }
-    function Child3() {
-        Parent3.call(this) 
+    function Child() {
+        Parent.call(this) 
         this.type = 'Child3'
     }
     // 缺点：父级的构造函数执行了两次
-    Child3.prototype = new Parent3()
-    var s3 = new Child3()
-    var s4 = new Child3()
+    Child.prototype = new Parent()
+    var s3 = new Child()
+    var s4 = new Child()
     s3.play.push(4)
     console.log(s3.play,s4.play)
     ```
     
 4. 优化方式1: 通过父类的`prototype`
     
-    方法：子类构造函数中执行父类构造函数，然后将父类构造函数的原型对象赋值给子类构造函数的原型对对象
+    方法：
+    - 子类构造函数中执行父类构造函数，
+    - 然后将父类构造函数的原型对象赋值给子类构造函数的原型对对象
 
     缺点：区分不了一个对象是子类的实例化还是父类的实例化
 
     ```js
-    function Parent4() {
+    function Parent() {
         this.name = 'Parent4'
         this.play = [1,2,3]
     }
-    function Child4() {
-        Parent4.call(this) 
+    function Child() {
+        Parent.call(this) 
         this.type = 'Child4'
     } 
     // 缺点：区分不了一个对象是一个子类的实例化还是一个父类的实例化
-    Child4.prototype = Parent4.prototype
-    var s5 = new Child4()
-    var s6 = new Child4()
+    Child.prototype = Parent.prototype
+    var s5 = new Child()
+    var s6 = new Child()
     console.log(s5, s6)
-    console.log(s5 instanceof Child4) // true
-    console.log(s5 instanceof Parent4) // true
+    console.log(s5 instanceof Child) // true
+    console.log(s5 instanceof Parent) // true
     ```
     
 5. 优化方式2：通过`Object.create()`
     
-    方法：在子类构造函数中执行父类构造函数，然后创建父类构造函数的实例继承赋值给子类构造函数的原型对象，最后将子类构造函数赋值给子类构造函数的原型对象的constructor
+    方法：
+    - 在子类构造函数中执行父类构造函数，
+    - 然后创建父类构造函数的实例继承赋值给子类构造函数的原型对象，
+    - 最后将子类构造函数赋值给子类构造函数的原型对象的constructor
     
     ```js
-    function Parent5() 
+    function Parent() 
         this.name = 'Parent5'
         this.play = [1,2,3]
     }
-    function Child5() {
-        Parent5.call(this) 
+    function Child() {
+        Parent.call(this) 
         this.type = 'Child5'
     } 
-    Child5.prototype = Object.create(Parent5.prototype)
-    Child5.prototype.constructor = Child5
+    Child.prototype = Object.create(Parent.prototype)
+    Child.prototype.constructor = Child
     
-    var s7 = new Child5()
-    console.log(s7 instanceof Child5, s7 instanceof Parent5)
+    var s7 = new Child()
+    console.log(s7 instanceof Child, s7 instanceof Parent)
     console.log(s5.constructor)
     ```
 6. 使用es6的`extends`    

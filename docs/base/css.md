@@ -1,6 +1,6 @@
 ## BFC及其工作原理
 
-BFC（Block Formatting Context）：**格式化上下文**，页面中的一块渲染区域，并且有一套渲染规则，它决定了其子元素将如何定位，以及和其他元素的关系和相互作用
+BFC（Block Formatting Context）：**块级格式化上下文**，页面中的一块渲染区域，并且有一套渲染规则，它决定了其子元素将如何定位，以及和其他元素的关系和相互作用
 
 BFC的规则：
 - BFC内部的盒子Box会在垂直方向，一个接一个地放置。
@@ -66,7 +66,7 @@ dom.getBoundingClientRect().width/height
 
 1. 额外标签法：给谁清除浮动，就在其后面额外增加一个个空白标签，并设置样式为设置`clear: both`
 2. 创建BFC：父级添加样式`overflow: hidden`
-3. 浮动元素使用after伪元素，请设置如何
+3. 浮动元素使用after伪元素，如何设置：
 ```css
 .clearfix:after{
     content: "";
@@ -117,14 +117,14 @@ align-items: center;
 position: relative;
 
 // 子容器
-position:absolute;
-margin:auto;
-top:0;
-bottom:0;
-left:0;
-right:0;
+position: absolute;
+margin: auto;
+top: 0;
+bottom: 0;
+left: 0;
+right: 0;
 ```
-3. position+transform
+3. position + transform
 ```css
 // 父容器
 position: relative;

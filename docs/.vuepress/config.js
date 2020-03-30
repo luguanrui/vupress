@@ -23,7 +23,7 @@ module.exports = {
       },
       {
         text: 'Webpack',
-        link: '/webpack/webpack'
+        link: '/webpack/webpack/'
       },
       {
         text: 'Typescript',
@@ -77,7 +77,9 @@ module.exports = {
         {
           title: 'webpack',
           collapsable: false,
-          children: []
+          children: [
+            ['webpack', 'webpack']
+          ]
         }
       ],
       '/typescript/': [

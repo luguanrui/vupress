@@ -1,15 +1,16 @@
-<!-- ## 改变的this指向 -->
-
 特点：
-- 都是改变当前函数的this指向
+- 都是改变当前this的指向
 - call和apply立即执行当前函数
 - bind并不执行当前函数,而是返回一个函数
 
 ## call
 
 调用方法：
-- func.call(thisArg, arg1, arg2, ...)
+```js
+func.call(thisArg, arg1, arg2, ...)
+```
 
+手写实现：
 ```js
 Function.prototype._call = function(context) {
     // 赋值作用域参数,如果没有则默认为window对象
@@ -30,8 +31,11 @@ Function.prototype._call = function(context) {
 ## apply
 
 调用方法：
-- func.apply(thisArg, [argsArray])
+```js
+func.apply(thisArg, [argsArray])
+```
 
+手写实现：
 ```js
 Function.prototype._apply = function (context) {
     // 赋值作用域参数,如果没有则默认为window对象
@@ -57,8 +61,11 @@ Function.prototype._apply = function (context) {
 ## bind
 
 调用方法：
-- func.bind(thisArg[, arg1[, arg2[, ...]]])
+```js
+func.bind(thisArg[, arg1[, arg2[, ...]]])
+```
 
+手写实现：
 ```js
 Function.prototype._bind = function(context) {
     // 保存原有函数
