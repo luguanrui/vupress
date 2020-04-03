@@ -1,12 +1,12 @@
 ## 构造函数与原型链
 
-什么是原型：
+原型：
 
 - 所有**引用类型**都有一个`__proto__`(隐式原型)属性，属性值是一个普通的对象
 - 所有**函数**都有一个`prototype`(显示原型)属性，属性值是一个普通的对象
 - 所有引用类型的`__proto__`属性指向它构造函数的`prototype`
 
-什么是原型链：
+原型链：
 
 - 当访问一个对象的某个属性时，会先在这个对象本身属性上查找，
 - 如果没有找到，则会去它的`__proto__`隐式原型上查找，即它的构造函数的`prototype`，
@@ -16,41 +16,46 @@
 ### 创建对象有几种方法
 
 1. 字面量方法：`{}`,`new Object()`
-    
-    ```js
-    var o1 = {name: 'o1'}
-    var o2 = new Object({name: 'o2'}) // 也可以理解为通过构造函数来创建对象
-    ``` 
+
+```js
+var o1 = {name: 'o1'}
+var o2 = new Object({name: 'o2'}) // 也可以理解为通过构造函数来创建对象
+```
+
 2. 构造函数
 
-    ```js
-    var M = function(name){this.name = name}
-    var o3 = new M('o3')
-    ``` 
+```js
+var M = function(name){this.name = name}
+var o3 = new M('o3')
+```
+
 3. **Object.create()**，创建一个对象并继承原型对象
-    
-    ```js
-    var p = {name: 'p'}
-    var o4 = Object.create(p)
-    ```
+
+```js
+var p = {name: 'p'}
+var o4 = Object.create(p)
+```
+
 > Object.create(null) 创建的对象是一个空对象，在该对象上没有继承 Object.prototype 原型链上的属性或者方法
 
-### 原型、构造函数、实例、原型链
+### 原型、构造函数、实例、原型链的关系
 
 <img src="https://note.youdao.com/yws/api/personal/file/WEBd244d38abd1db470324f76dadc1173fc?method=download&shareKey=476880ad86fa9baf2d8a9804b11a9ec4" />
- 
+
 说明：
 
 1. 构造函数M的原型对象`M.prototype`的`constructor`等于`构造函数`（构造函数的显示原型constructor 等于 该构造函数 ）
 
-    ```js
-    M.prototype.constructor === M
-    ```
+```js
+M.prototype.constructor === M
+```
+
 2. 构造函数M的原型对象`M.prototype` 等于 构造函数M的实例的`__proto__`（构造函数的显式原型 等于 构造函数实例的隐式原型）
 
-    ```js
-    M.prototype === new M().__proto__
-    ```
+```js
+M.prototype === new M().__proto__
+```
+
 ## instanceof的原理是什么
 
 <img src="https://note.youdao.com/yws/api/personal/file/WEB011701df82f383c5b84ba0d992c9fda1?method=download&shareKey=2bd0ecabd74bb996d9d0c2480588d7a6"/>
@@ -67,7 +72,7 @@ obj instanceof Object
 
 问题：理解创建一个对象如何关联上一个实例对象？
 
-工作原理：
+原理：
 
 1. 创建一个新对象（空对象），继承构造函数的原型对象（foo.prototype）
 2. 构造函数foo被执行。执行的时候，相应的传参会被传入，同时上下文（this）会指定为这个新的实例。new foo等同于new foo()，只能用于在不传任何参数的情况
@@ -99,30 +104,32 @@ o6.walk()
 
 ## 面向对象类oop
 
+面向对象程序设计(Object Oriented Programming)
+
 ### 类与实例
 
 1. 类的声明：构造函数、es6的class
- 
-    ```js
-    function Animal() {
-        this.name = 'name'
+
+```js
+function Animal() {
+    this.name = 'name'
+}
+
+class Animal2 {
+    constructor() {
+        this.name = ''
     }
-    
-    class Animal2 {
-        constructor() {
-            this.name = ''
-        }
-    }
-    ```
-    
-> 说明class 只是语法糖，本质还是函数，Animal2 instanceof Function // true
+}
+```
+
+> class 只是语法糖，本质还是函数，`Animal2 instanceof Function` // true
 
 2. 生成实例（通过类实例化生成对象）
 
-    ```js
-    new Animal()
-    new Animal2()
-    ```
+```js
+new Animal()
+new Animal2()
+```
 
 ### 类与继承(通过`原型链`实现继承)
 

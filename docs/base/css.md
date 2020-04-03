@@ -3,6 +3,7 @@
 BFC（Block Formatting Context）：**块级格式化上下文**，页面中的一块渲染区域，并且有一套渲染规则，它决定了其子元素将如何定位，以及和其他元素的关系和相互作用
 
 BFC的规则：
+
 - BFC内部的盒子Box会在垂直方向，一个接一个地放置。
 - Box垂直方向的距离由margin决定。属于同一个BFC的两个相邻Box的垂直margin会发生重叠。
 - 每个元素的margin box的左边， 与包含块border box的左边相接触(对于从左往右的格式化，否则相反)。即使存在浮动也是如此。
@@ -11,7 +12,7 @@ BFC的规则：
 - 计算BFC的高度时，浮动元素也参与计算。
 
 如何生成BFC：
-属性| 值 
+属性| 值
 ---|---
 根元素html | html标签就是一个BFC
 float | left、right(不为none)
@@ -20,6 +21,7 @@ display | 值为inline-block, table-cell, table-caption, flex, inline-flex
 overflow | hidden、auto、scroll等（不为visible）
 
 BFC的作用：
+
 - 防止垂直 margin 重叠
 - 避免浮动元素和其他元素重叠
 - 清除内部浮动
@@ -67,6 +69,7 @@ dom.getBoundingClientRect().width/height
 1. 额外标签法：给谁清除浮动，就在其后面额外增加一个个空白标签，并设置样式为设置`clear: both`
 2. 创建BFC：父级添加样式`overflow: hidden`
 3. 浮动元素使用after伪元素，如何设置：
+
 ```css
 .clearfix:after{
     content: "";
@@ -80,7 +83,9 @@ dom.getBoundingClientRect().width/height
 }
 
 ```
+
 4. 使用`before`和`after`双伪元素清除浮动
+
 ```css
 .clearfix:after,.clearfix:before{
     content: "";
@@ -105,13 +110,16 @@ opacity:0 | 是 | 是 | 是
 ## 水平垂直居中的方式
 
 1. flex
+
 ```css
 // 父容器
 display: flex;
 justify-content: center;
 align-items: center;
 ```
+
 2. position
+
 ```css
 // 父容器
 position: relative;
@@ -124,7 +132,9 @@ bottom: 0;
 left: 0;
 right: 0;
 ```
+
 3. position + transform
+
 ```css
 // 父容器
 position: relative;
@@ -135,14 +145,26 @@ top: 50%;
 left: 50%;
 transform: translate(-50%, -50%);
 ```
+
+> transform还有其他的属性:
+>
+> 1. 转换: translate(x,y), translateX(x), translateY(y), translateZ(z), translate3d(x,y,z)
+> 2. 缩放: scale((x,y), scaleX(x), scaleY(y), scaleZ(z), scale3d((x,y,z)
+> 3. 旋转: rotate(angle), rotateX(angle), rotateY(angle), rotateZ(angle), rotate3d(x,y,z,angle)
+> 4. 倾斜: skew(x-angle,y-angle),skewX(angle), skewY(angle)
+> 5. 透视: perspective(n)
+
 4. table-cell
-```
+
+```html
 <div class="box">
     <div class="content">
         <div class="inner"></div>
     </div>
 </div>
+```
 
+```css
 html, body {
     height: 100%;
     width: 100%;
@@ -167,13 +189,17 @@ html, body {
 ```
 
 ## 文本超出部分显示省略号
+
 单行
+
 ```css
 overflow: hidden;
 text-overflow: ellipsis;
 white-space: nowrap;
 ```
+
 多行
+
 ```css
 display: -webkit-box;
 -webkit-box-orient: vertical;
