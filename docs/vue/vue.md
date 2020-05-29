@@ -1,3 +1,4 @@
+<!-- [[toc]] -->
 ## 什么是MVVM
 
 MVVM是`Model-View-ViewModel`缩写，也就是把MVC中的Controller演变成ViewModel
@@ -355,7 +356,7 @@ extend是vue提供的一个全局方法，使用基础 Vue 构造器，创建一
 
 ref 被用来给元素或子组件注册引用信息。引用信息将会注册在父组件的 $refs 对象上。如果在普通的 DOM 元素上使用，引用指向的就是 DOM 元素
 
-## 请谈谈你对\<slot>元素的理解
+## 请谈谈你对slot元素的理解
 
 slot插槽，分为匿名插槽，具名插槽，作用域插槽：
 

@@ -58,7 +58,8 @@ module.exports = {
             ['page-performance', '页面性能'],
             ['error', '错误监控'],
             ['change-this', 'call,apply和bind'],
-            ['debounce-throttle', '防抖和节流']
+            ['debounce-throttle', '防抖和节流'],
+            ['es6', 'es6']
           ]
         }
       ],
