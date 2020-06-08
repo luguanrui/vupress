@@ -1,11 +1,12 @@
 
 # 改变this执行
 
-## 箭头函数的this指向
+## 箭头函数与普通函数的区别
 
-- 箭头函数没有绑定this
-- 箭头函数的this指向其所属上下文（定义的位置）
-- call，apply,bind并不会改变箭头函数的this指向
+- 箭头函数语法上更简洁
+- 箭头函数没有自己的this，它里面的this继承函数所处的上下文中的this（使用call，apply,bind并不会改变箭头函数的this指向）
+- 箭头函数中的没有`arguments`（类数组），只能基于`...arg`获取传的参数集合(数组)
+- 箭头函数不能被new执行，因为箭头函数没有`this`，也没有`prototype`
 
 call，apply,bind 特点：
 - 都是改变当前this的指向
