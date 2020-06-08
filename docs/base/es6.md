@@ -1,3 +1,5 @@
+# es6
+
 ## Symbol
 
 1. 什么是Symbol

@@ -1,4 +1,6 @@
 <!-- [[toc]] -->
+# vue2.0
+
 ## 什么是MVVM
 
 MVVM是`Model-View-ViewModel`缩写，也就是把MVC中的Controller演变成ViewModel

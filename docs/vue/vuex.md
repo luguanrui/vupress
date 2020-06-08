@@ -1,4 +1,6 @@
-## vuex原理
+# vuex
+
+## 原理
 
 <img src="../public/vuex.png"/>
 
