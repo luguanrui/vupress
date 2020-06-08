@@ -3,7 +3,7 @@
 原型：
 
 - 所有**引用类型**都有一个`__proto__`(隐式原型)属性，属性值是一个普通的对象
-- 所有**函数**都有一个`prototype`(显示原型)属性，属性值是一个普通的对象
+- 所有**函数**都有一个`prototype`(显式原型)属性，属性值是一个普通的对象
 - 所有引用类型的`__proto__`属性指向它构造函数的`prototype`
 
 原型链：
@@ -44,19 +44,19 @@ var o4 = Object.create(p)
 
 说明：
 
-1. 构造函数M的原型对象`M.prototype`的`constructor`等于`构造函数`（构造函数的显示原型constructor 等于 该构造函数 ）
+1. 构造函数M的显式原型`M.prototype`的构造函数`constructor` 等于 `构造函数`
 
 ```js
 M.prototype.constructor === M
 ```
 
-2. 构造函数M的原型对象`M.prototype` 等于 构造函数M的实例的`__proto__`（构造函数的显式原型 等于 构造函数实例的隐式原型）
+2. 构造函数M的显式原型`M.prototype` 等于 构造函数M实例的隐式原型`__proto__`
 
 ```js
 M.prototype === new M().__proto__
 ```
 
-## instanceof的原理是什么
+## instanceof的原理
 
 <img src="https://note.youdao.com/yws/api/personal/file/WEB011701df82f383c5b84ba0d992c9fda1?method=download&shareKey=2bd0ecabd74bb996d9d0c2480588d7a6"/>
 
@@ -65,8 +65,10 @@ var obj = {}
 obj instanceof Object
 // obj.__proto__ === Object.prototype // true
 ```
-
-原理：判断实例对象的`__proto__`和构造函数的`prototype`是否是同一个引用(new M().__proto__ === M.prototype)
+::: tip 描述
+ - 判断实例对象的`__proto__`和构造函数的`prototype`是否是同一个引用(new M().__proto__ === M.prototype)
+ - 或者 判断实例的`隐式函数`与构造函数的`显式函数`是否是同一引用
+:::
 
 ## new运算符
 

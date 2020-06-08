@@ -186,3 +186,83 @@ for (var [key, val] of map.entries()) {
 - get
 - set
 - has
+
+
+## Promise
+
+### 手写promise
+
+```js
+const PENDING = 'pending';
+const FULFILLED = 'fulfilled';
+const REJECTED = 'rejected';
+
+function MyPromise(executor) {
+    this.state = PENDING;
+    this.value = null;
+    this.reason = null;
+    this.onFulfilledCallbacks = [];
+    this.onRejectedCallbacks = [];
+
+    const resolve = value => {
+        if (this.state === PENDING) {
+            this.state === FULFILLED;
+            this.value === value;
+            this.onFulfilledCallbacks.forEach(fuc =>{
+                fuc();
+            });
+        }
+    };
+
+    const reject = reason => {
+        if (this.state === PENDING) {
+            this.state = REJECTED;
+            this.reason === reason;
+            this.onRejectedCallbacks.forEach(fuc =>{
+                fuc();
+            })
+        }
+    };
+
+    try {
+        executor(resolve, reject);
+    } catch (reason) {
+        reject(reason);
+    }
+}
+
+/*
+- then方法接受两个参数onFulfilled、onRejected，它们分别在状态由PENDING改变为FULFILLED、REJECTED后调用
+- 一个promise可绑定多个then方法
+- then方法可以同步调用也可以异步调用
+- 同步调用：状态已经改变，直接调用onFulfilled方法
+- 异步调用：状态还是PENDING，将onFulfilled、onRejected分别加入两个函数- 
+- 数组onFulfilledCallbacks、onRejectedCallbacks，
+- 当异步调用resolve和reject时，将两个数组中绑定的事件循环执行。
+*/
+
+MyPromise.prototype.then = function(onFulfilled,onRejected){
+    switch(this.state){
+        case FULFILLED:
+            onFulfilled(this.value);
+            break;
+        case REJECTED:
+            onRejected(this.reason);
+            break;
+        case PENDING:
+            this.onFulfilledCallbacks.push(()=>{
+                onFulfilled(this.value);
+            });
+            this.onRejectedCallbacks.push(() => {
+                onRejected(this.reason);
+            })
+            break;
+            
+    }
+}
+
+// 由于catch方法是then(null, onRejected)的语法糖，所以这里也很好实现
+MyPromise.prototype.catch = function(onRejected){
+    return this.then(null, onRejected);
+}
+```
