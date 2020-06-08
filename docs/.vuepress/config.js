@@ -1,10 +1,10 @@
 const dayjs = require('dayjs')
 
 module.exports = {
-  title: 'Documents',
+  title: 'Blog',
   base: '/',
   dest: 'dist',
-  description: 'this is my documents',
+  description: 'this is my blog',
   head: [['link', { rel: 'icon', href: '/logo.png' }]],
   themeConfig: {
     displayAllHeaders: true,
@@ -20,26 +20,12 @@ module.exports = {
         link: '/base/',
       },
       {
-        text: '框架',
-        items: [
-          {
-            text: 'vue',
-            link: '/vue/vue/',
-          },
-          {
-            text: 'vue-router',
-            link: '/vue/vue-router/',
-          },
-          {
-            text: 'vuex',
-            link: '/vue/vuex/',
-          },
-        ],
-        // link: '/vue/vue/'
+        text: 'Vue',
+        link: '/vue/'
       },
       {
         text: 'Webpack',
-        link: '/webpack/webpack/',
+        link: '/webpack/',
       },
       {
         text: 'GitHub',
@@ -69,6 +55,9 @@ module.exports = {
         'vue',
         'vue-router',
         'vuex'
+      ],
+      'webpack': [
+        'README'
       ]
     },
     // sidebar: {
