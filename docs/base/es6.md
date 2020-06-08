@@ -190,6 +190,14 @@ for (var [key, val] of map.entries()) {
 
 ## Promise
 
+三种状态
+
+状态 | 说明
+--- | ---
+pending | 初始状态
+fulfilled | 完成状态
+rejected | 失败状态
+
 ### 手写promise
 
 ```js

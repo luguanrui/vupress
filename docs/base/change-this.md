@@ -1,4 +1,11 @@
-特点：
+
+## 箭头函数的this指向
+
+- 箭头函数没有绑定this
+- 箭头函数的this指向其所属上下文（定义的位置）
+- call，apply,bind并不会改变箭头函数的this指向
+
+call，apply,bind 特点：
 - 都是改变当前this的指向
 - call和apply立即执行当前函数
 - bind并不执行当前函数,而是返回一个函数
