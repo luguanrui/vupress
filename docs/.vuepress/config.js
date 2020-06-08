@@ -1,4 +1,4 @@
-const moment = require('moment')
+const dayjs = require('dayjs')
 
 module.exports = {
   title: 'Documents',
@@ -106,7 +106,7 @@ module.exports = {
       '@vuepress/last-updated',
       {
         transformer: (timestamp, lang) => {
-          return moment(timestamp).format('YYYY-MM-DD HH:mm:ss')
+          return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss')
         }
       }
     ]
