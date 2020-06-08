@@ -43,7 +43,7 @@ export default new Router({
 ```
 - es提案的import()
 ```js
-const Home = () => import('@/components/home'
+const Home = () => import('@/components/home'）
 ```
 - webpack的require,ensure()
 ```js
@@ -77,4 +77,4 @@ const Home = () => import('@/components/home'
 
 location.hash的值实际就是URL中#后面的东西。
 
-history实际采用了HTML5中提供的API来实现，主要有history.pushState()和history.replaceState()
+history实际采用了HTML5中提供的API来实现，主要有`history.pushState()`和`history.replaceState()`

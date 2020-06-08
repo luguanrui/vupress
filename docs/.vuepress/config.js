@@ -57,7 +57,7 @@ module.exports = {
             ['js-run', 'js运行机制'],
             ['page-performance', '页面性能'],
             ['error', '错误监控'],
-            ['change-this', 'call,apply和bind'],
+            ['change-this', '改变this执行'],
             ['debounce-throttle', '防抖和节流'],
             ['es6', 'es6']
           ]
