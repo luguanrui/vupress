@@ -6,7 +6,7 @@ SPA(single page application):单一页面应用程序，有且只有一个完整
 
 单页面应用(SPA)的核心之一是:
 1. 更新试图但是不重新请求页面，而且替换当前页面
-2. vue-router实现单页面路由跳转，提供了三种方式：`hash`模式、`history`模式、`abstract`模式，根据mode参数来决定采用哪一种方式。
+2. vue-router实现单页面路由跳转，提供了三种方式：`hash`模式、`history`模式，根据mode参数来决定采用哪一种方式。
 
 ## 如何在Vue Router中配置404页面？
 ```js
@@ -22,11 +22,11 @@ export default new Router({
       name: 'newDetail',
       component: na
     },
-   {
-  path: '*',
-    name: 'notfount',
-    component: notfount
-}
+    {
+      path: '*',
+      name: 'notfount',
+      component: notfount
+    }
   ]
 })
 ```
@@ -46,6 +46,12 @@ export default new Router({
 - es提案的import()
 ```js
 const Home = () => import('@/components/home'）
+
+{
+  path: '/home',
+  name: 'home',
+  component: Home
+}
 ```
 - webpack的require,ensure()
 ```js
@@ -53,23 +59,23 @@ const Home = () => import('@/components/home'）
   path: '/home',
   name: 'home',
   component: r => require.ensure([], () => r(require('@/components/home')), 'demo')
-},
+}
 ```
 ## 在Vue Router中，什么是导航守卫
 
 导航守卫就是路由从开始变化到结束变化的钩子函数。包括三种：全局的，单个路由独享的，或者组件级的
 
 全局：
-- router.beforeEach(to,from,next)
-- router.afterEach(to,from,next)
+- router.beforeEach(to, from, next)
+- router.afterEach(to, from, next)
 
 路由独享的守卫：
-- beforeEnter(to,from,next)
+- beforeEnter(to, from, next)
 
 组件内的守卫：
-- beforeRouterEnter(to,from,next)
-- beforeRouterUpdate(to,from,next)
-- beforeRouterLeave(to,from,next)
+- beforeRouterEnter(to, from, next)
+- beforeRouterUpdate(to, from, next)
+- beforeRouterLeave(to, from, next)
 
 ## Vue Router有几种路由模式
 
@@ -77,6 +83,17 @@ const Home = () => import('@/components/home'）
 
 ## hash路由和history路由实现原理说一下
 
-location.hash的值实际就是URL中#后面的东西。
+- location.hash的值实际就是URL中#后面的东西
+- history实际采用了HTML5中提供的API来实现，主要有`history.pushState()`和`history.replaceState()`，设置history模式需要后台支持
 
-history实际采用了HTML5中提供的API来实现，主要有`history.pushState()`和`history.replaceState()`
+## 动态路由
+
+```js
+const router = new Router({
+  routes: [
+    {
+      path: '/user/:id', component: User
+    }
+  ]
+})
+```

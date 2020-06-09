@@ -48,7 +48,7 @@ Vue3.x改用`Proxy`替代`Object.defineProperty`。因为`Proxy`可以直接监�
 
 缺点：
 
-- 无法检测到对象属性的新增或删除，解决方案：Vue.set(obj, propertName/index, value)
+- 无法检测到对象属性的新增或删除，解决方案：Vue.set(obj, propertName/index, value),Vue.delete()
 - 不能监听数组的变化，因此vue重写了数组操作的方法，比如push，pop，shift，unshift，splice，sort，reverse
 
 Proxy是ES6提供的一个新的API，用于修改某些操作的默认行为
@@ -150,6 +150,16 @@ Proxy是ES6提供的一个新的API，用于修改某些操作的默认行为
 
 2. watch没有缓存性，更多的是观察的作用，可以监听某些数据执行回调。当我们需要深度监听对象中的属性时，可以打开`deep：true`选项，这样便会对对象中的每一项进行监听。这样会带来性能问题，优化的话可以使用字符串形式监听，如果没有写到组件中，不要忘记使用unWatch手动注销
 
+## mixins
+
+- 多个组件有相同的逻辑，抽离出来
+- mixins有一些问题，后面vue3.0提出`composition api`来解决这些问题
+
+问题：
+- 来源不明确，不利于代码的阅读，如果有个mixins和自动合并
+- 多个mixins会造成命名冲突
+- mixin和组件可能出现多对多的关系，复杂度较高
+
 ## 组件通信
 
 1. 父子组件通信
@@ -237,6 +247,8 @@ Directives: {
  Demo:  Opt
 }
 ```
+
+## vue中use的原理
 
 ## Vue中元素的key特性有什么作用
 
@@ -440,9 +452,21 @@ Vue3.x借鉴了`ivi算法`和 `inferno算法`：在创建VNode时就确定其类
 
 用JavaScript的树形结构对象来描述真实dom结构
 
-## 什么是DOM diff
+<img src="../public/js-vdom.png"/>
+
+## 什么是 diff 算法
 
 比对(diff)渲染更新前后产生的两个虚拟dom对象的差异，并产出差异补丁对象，再将差异补丁对象应用到真实dom节点上
+
+- 只比较同一层级，不跨级比较
+
+<img src="../public/diff1.jpg"/>
+
+- tag不相同，则直接删除掉，不再深度比较
+
+<img src="../public/diff2.jpg"/>
+
+- tag和key，两者都相同，则认为是相同节点，不再深度比较
 
 ## 再说一下虚拟Dom以及key属性的作用
 

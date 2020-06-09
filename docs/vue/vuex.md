@@ -6,7 +6,7 @@
 
 Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。
 
-核心部分：
+## 核心api
 
 api | 说明
 --- | ---
@@ -15,9 +15,13 @@ getters | getters是store的计算属性，对state的加工，是派生出来�
 mutations | mutations提交更改数据，使用store.commit方法更改state存储的状态。（mutations同步函数）
 actions | actions像一个装饰器，提交mutation，而不是直接变更状态。（actions可以包含任何异步操作）
 module | Module是store分割的模块，每个模块拥有自己的state、getters、mutations、actions
-辅助函数 | Vuex提供了mapState、MapGetters、MapActions、mapMutations等辅助函数给开发在vm中处理store
+辅助函数 | Vuex提供了mapState、mapGetters、mapActions、mapMutations等辅助函数给开发在vm中处理store
+dispatch | 
+commit | 
 
-基本使用：
+## vuex的使用
+
+基础应用：
 ```js
 import Vuex from 'vuex';
 Vue.use(Vuex); // 1. vue的插件机制，安装vuex
@@ -80,6 +84,27 @@ const user = {
   },
 }
 export default user
+```
+
+## mapState,mapGetters,mapActions,mapMutations分别用在vue的什么地方
+
+```js
+import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
+export default {
+  data() {
+    return {}
+  },
+  computed: {
+    ...mapState(['sideBarList']),
+    ...mapGetters(['getCardProgramInfo'])
+  },
+  methods: {
+    ...mapMutations({
+      setCurrentScene: "SET_CURRENT_SCENE"
+    }),
+    ...mapActions(['getIncrementList','handleIgnoreOne'])
+  }
+}
 ```
 
 ## 如何开启Vuex的严格模式？它有什么作用？
