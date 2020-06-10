@@ -122,7 +122,8 @@ const store = new Vuex.Store({
 
 - mutation是修改store中state的唯一途径
 - mutation必须是同步的
-- action可以是异步的，但是不能直接操作state，需要通过提交 mutation 间接更变状态
+- action可以是异步的，但是不能直接操作state，需要通过提交（commit） mutation 间接更变状态
+- mutation只要一个操作，而action可以整合多个mutation
 
 ## 请谈谈你对Vuex的理解
 

@@ -2,6 +2,8 @@
 
 ## 什么是MVVM
 
+<img src="../public/mvvm.jpg">
+
 MVVM是`Model-View-ViewModel`缩写，也就是把MVC中的Controller演变成ViewModel
 
 - `Model`【模型】层代表数据模型
@@ -22,23 +24,26 @@ MVVM模式有两个方向：
 
 <img src="../public/vue-obj.png"/>
 
+- 监听data变化
+- 组件渲染和更新的流程
+
 Vue在初始化数据时，会使用`Object.defineProperty`重新定义data中的所有属性，当页面使用对应属性时，首先会进行`依赖收集`(收集当前组件的watcher)，如果属性发生变化会通知相关依赖进行更新操作(`发布订阅`)
 
 采用`数据劫持`结合`发布者-订阅者模式`的方式，通过`Object.defineProperty()`来劫持各个属性的`setter`，`getter`，在数据变动时发布消息给订阅者，触发相应的监听回调
 
 具体步骤：
 
-第一步：需要observe的数据对象进行递归遍历，包括子属性对象的属性，都加上 setter和getter
+1. 需要observe的数据对象进行递归遍历，包括子属性对象的属性，都加上 setter和getter
 这样的话，给这个对象的某个值赋值，就会触发setter，那么就能监听到了数据变化
 
-第二步：compile解析模板指令，将模板中的变量替换成数据，然后初始化渲染页面视图，并将每个指令对应的节点绑定更新函数，添加监听数据的订阅者，一旦数据有变动，收到通知，更新视图
+2. compile解析模板指令，将模板中的变量替换成数据，然后初始化渲染页面视图，并将每个指令对应的节点绑定更新函数，添加监听数据的订阅者，一旦数据有变动，收到通知，更新视图
 
-第三步：Watcher订阅者是Observer和Compile之间通信的桥梁，主要做的事情是:
+3. Watcher订阅者是Observer和Compile之间通信的桥梁，主要做的事情是:
 1、在自身实例化时往属性订阅器(dep)里面添加自己
 2、自身必须有一个update()方法
 3、待属性变动dep.notice()通知时，能调用自身的update()方法，并触发Compile中绑定的回调，则功成身退。
 
-第四步：MVVM作为数据绑定的入口，整合Observer、Compile和Watcher三者，通过Observer来监听自己的model数据变化，通过Compile来解析编译模板指令，最终利用Watcher搭起Observer和Compile之间的通信桥梁，达到数据变化 -> 视图更新；视图交互变化(input) -> 数据model变更的双向绑定效果。
+4. MVVM作为数据绑定的入口，整合Observer、Compile和Watcher三者，通过Observer来监听自己的model数据变化，通过Compile来解析编译模板指令，最终利用Watcher搭起Observer和Compile之间的通信桥梁，达到数据变化 -> 视图更新；视图交互变化(input) -> 数据model变更的双向绑定效果。
 
 ## Vue3.x响应式数据原理
 
@@ -138,7 +143,9 @@ Proxy是ES6提供的一个新的API，用于修改某些操作的默认行为
 
 ## v-if和v-show的区别
 
-当条件不成立时，v-if不会渲染DOM元素，v-show操作的是样式(display)，切换当前DOM的显示和隐藏。
+- v-show通过CSS display来控制显示和隐藏
+- v-if是组件真的渲染和销毁，而不是显示和隐藏
+- 频繁切换显示状态用v-show
 
 ## computed与watch的区别
 
@@ -191,6 +198,14 @@ obj: {
 - `vuex`
 - `$attrs`、`$listeners`
 - `provide`、`inject`
+
+## 如何将组件所有的props传递给子组件
+
+- 通过$props
+
+```js
+<User v-bind="$props" />
+```
 
 ## vue-loader是什么？使用它的用途有哪些
 
@@ -264,7 +279,11 @@ Directives: {
 
 ## Vue中元素的key特性有什么作用
 
-主要是为了高效，准确的更新虚拟DOM
+- 必须使用key，且不能使用index和random
+- diff算法中通过tag和ket来判断，是否是相同的dom
+- 好处是减少渲染次数，提升渲染性能
+
+
 
 - diff算法，就地复用
 
@@ -421,15 +440,54 @@ slot插槽，分为匿名插槽，具名插槽，作用域插槽：
 
 ## 说一下v-model的原理
 
+- input元素的value = this.name
+- 绑定input事件this.name = $event.target.value
+- data更新触发re-render
+
 v-model本质就是一个语法糖，可以看成是value + input方法的语法糖。 可以通过model属性的prop和event属性来进行自定义。原生的v-model，会根据标签的不同生成不同的事件和属性。
 
 v-model会把它关联的响应式数据，动态地绑定到表单元素的value属性上，然后监听表单元素的input事件：当v-model绑定的响应数据发生变化时，表单元素的value值也会同步变化；当表单元素接受用户的输入时，input事件会触发，input的回调逻辑会把表单元素value最新值同步赋值给v-model绑定的响应式数据。
 
 [参考](https://segmentfault.com/a/1190000021039085?utm_source=tag-newest#item-4-1)
 
+## 自己实现一个v-model
+
+```vue
+<template>
+  <input type="text" :value="text" @input="$emit('change', $event.target,value)"/>
+  <!-- 
+    1. :value而不是v-model
+    2. change和model.event对应起来即可
+   -->
+</template>
+<script>
+export default {
+  model: {
+    prop: 'text', // 对应到 props text
+    event: 'change'
+  },
+  props: {
+    text: String
+  }
+}
+</script>
+```
+
 ## Vue事件绑定原理
 
 原生事件绑定是通过`addEventListener`绑定给真实元素的，组件事件绑定是通过Vue自定义的`$on`实现的。
+
+## 什么啥时候使用异步组件
+
+- 加载比较大的组件，比如echart
+- 路由异步加载
+
+## 何时使用beforeDestory
+
+- 解绑自定事件 event.$off
+- 清除定时器
+- 解绑自定义的dom事件，比如 window scroll等
+
 
 ## Vue模版编译原理
 
@@ -517,7 +575,6 @@ SSR也就是服务端渲染，也就是将Vue在客户端把标签渲染成HTML�
 - 尽量减少data中的数据，data中的数据都会增加getter和setter，会收集对应的watcher
 - v-if和v-for不能连用
 - 如果需要使用v-for给每项元素绑定事件时使用事件代理
-- SPA 页面采用`keep-alive`缓存组件在
 - 更多的情况下，使用`v-if`替代`v-show`
 - `key`保证唯一
 - 使用`路由懒加载`、异步组件
@@ -525,6 +582,8 @@ SSR也就是服务端渲染，也就是将Vue在客户端把标签渲染成HTML�
 - 第三方模块按需导入
 - 长列表滚动到可视区域动态加载
 - 图片懒加载
+- 自定义事件，dom事件及时销毁，否则会造成内存泄露，页面越来越卡
+- 合理使用`keep-alive`
 
 2. SEO优化
 
@@ -835,11 +894,16 @@ with(obj) {
 
 ### 执行render函数生成vnode
 
-## vue组件是如何渲染和更新的
+## 描述vue组件是如何渲染和更新过程
 
 <img src="./../public/render.jpg">
 
 ::: tip 说明
+
+1. 执行render函数触发touch，触发getter，收集依赖，进去wather监听
+2. 修改data，触发setter，通知watcher数据是否收集过了，收集过了就触发重新渲染re-render
+
+vue三大模块：
 - 渲染和响应式的关系
 - 渲染和模板编译的关系
 - 渲染和vdom的关系
