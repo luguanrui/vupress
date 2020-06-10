@@ -83,8 +83,48 @@ const Home = () => import('@/components/home'）
 
 ## hash路由和history路由实现原理说一下
 
-- location.hash的值实际就是URL中#后面的东西
-- history实际采用了HTML5中提供的API来实现，主要有`history.pushState()`和`history.replaceState()`，设置history模式需要后台支持
+- hash路由通过`window.onhashchange`方法，来监听hash的变化触发路由对应的视图变化
+```js
+// hash变化包括：1.js修改url，2.手动修改url,3.浏览器前进后退
+window.onhashchange = event => {
+  console.log('old url', event.oldURL)
+  console.log('new url', event.newURL)
+}
+// 页面初次加载获取 hash
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('hash', location.hash)
+})
+```
+
+表现：
+
+1. hash变化会触发网页跳转，即浏览器的前进后退
+2. hash变化不会刷新页面，spa必需的特点
+3. hash永远不会提交到server端
+
+- history实际采用了HTML5中提供的API来实现，主要有`history.pushState()`和`window.onpopstate()`，设置history模式需要后台支持
+
+```js
+// 页面初次加载获取 path
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('load', location.pathname)
+})
+// 打开一个新的路由，使用pushState方式，浏览器不会刷新页面
+document.getElementById('btn').addEventListener('click', () => {
+  const state = {name: 'page1'}
+  console.log('路由切换到', 'page1')
+  history.pushState(state, '', 'page1')
+})
+// 监听浏览器前进后退
+window.onpopstate = event => {
+  console.log('onpopstate', event.state, event.pathname)
+}
+```
+
+表现：
+
+1. 用url规范的路由，但跳转时不刷新页面
+2. 通过`history.pushState()`，`window.onpopstate()`来实现
 
 ## 动态路由
 

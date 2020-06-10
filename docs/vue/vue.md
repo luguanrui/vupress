@@ -810,3 +810,47 @@ function doPatch(node, patches) {
 
 export default patch
 ```
+
+## 模板编译
+
+### js的`with`语法
+
+```js
+const obj = {a: 1, b: 2}
+console.log(obj.a)
+console.log(obj.b)
+console.log(obj.c) // undefined
+
+// 使用width，能改变{}内自由变量的查询方式
+// 将 {} 内自由变量，当做 obj 的属性来查找
+// 慎用，它打破了作用域规则，易读性变差
+with(obj) {
+  console.log(obj.a)
+  console.log(obj.b)
+  console.log(obj.c) // 报错
+}
+```
+
+### vue-template-compiler插件将模板编译为render函数
+
+### 执行render函数生成vnode
+
+## vue组件是如何渲染和更新的
+
+<img src="./../public/render.jpg">
+
+::: tip 说明
+- 渲染和响应式的关系
+- 渲染和模板编译的关系
+- 渲染和vdom的关系
+:::
+
+初次渲染：
+- 解析模板为render函数
+- 触发响应式，监听data属性getter setter(只有模板中使用了数据，该数据才会触发get)
+- 执行render函数，生成vnode，patch(elem, vnode)
+  
+更新过程：
+- 修改data，触发setter
+- 重新执行render函数，生成newVnode
+- patch(vnode, newVnode)
