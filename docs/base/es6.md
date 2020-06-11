@@ -200,6 +200,11 @@ pending | 初始状态
 fulfilled | 完成状态
 rejected | 失败状态
 
+### reject和catch
+
+- reject后的东西，一定会进入then中的第二个回调，如果then中没有写第二个回调，则进入catch
+- resolve的东西，一定会进入then的第一个回调，肯定不会进入catch
+
 ### 手写promise
 
 ```js
