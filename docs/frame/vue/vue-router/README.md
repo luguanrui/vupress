@@ -1,4 +1,8 @@
-# vue-router
+---
+sidebar: auto
+---
+
+# VueRouter
 
 ## 路由原理
 

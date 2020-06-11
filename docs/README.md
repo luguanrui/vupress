@@ -1,16 +1,14 @@
 ---
 home: true
-# heroImage: /hero.png
-heroText: 个人学习文档
-tagline: 仅个人使用
-actionText: 快速上手 →
+heroImage: /logo.png
+actionText: 开始学习
 actionLink: /base/html
 features:
-# - title: 简洁至上
-#   details: 以 Markdown 为中心的项目结构，以最少的配置帮助你专注于写作。
-# - title: Vue驱动
-#   details: 享受 Vue + webpack 的开发体验，在 Markdown 中使用 Vue 组件，同时可以使用 Vue 来开发自定义主题。
-# - title: 高性能
-#   details: VuePress 为每个页面预渲染生成静态的 HTML，同时在页面被加载的时候，将作为 SPA 运行。
-# footer: MIT Licensed | Copyright © 2018-present Evan You
+- title: 基础
+  details: 基础知识是前端er必须掌握牢的东西，打牢巩固基础知识点是非常有必要的
+- title: 框架
+  details: 伴随着前端的不断发展，前端的框架也是层出不穷，比如vue，react等，需要我们学习的东西也是越来越多
+- title: 打包工具
+  details: 工欲善其事必先利其器，打包工具是一名合格的前端必须要掌握的
+footer: MIT Licensed | Copyright © 2020-present GuanRui Lu
 ---

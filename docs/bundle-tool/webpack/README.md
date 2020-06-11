@@ -1,4 +1,8 @@
-# webpack
+---
+sidebar: auto
+---
+
+# Webpack
 
 ## webpack怎么优化
 

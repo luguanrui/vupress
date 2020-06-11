@@ -1,10 +1,12 @@
-# vuex
+---
+sidebar: auto
+---
 
-## 原理
+# Vuex
 
 Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。
 
-<img src="../../public/vuex.png">
+<img src="../../../public/vuex.png">
 
 ## 核心api
 

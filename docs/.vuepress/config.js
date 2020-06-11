@@ -1,149 +1,89 @@
-const dayjs = require('dayjs')
+const dayjs = require("dayjs");
 
 module.exports = {
-  title: 'Blog',
-  base: '/',
-  dest: 'dist',
-  description: 'this is my blog',
-  head: [['link', { rel: 'icon', href: '/logo.png' }]],
+  title: "Blog",
+  base: "/",
+  dest: "dist",
+  description: "个人博客",
+  head: [["link", { rel: "icon", href: "/logo.png" }]],
   themeConfig: {
     displayAllHeaders: true,
-    lastUpdated: '上次更新',
+    lastUpdated: "上次更新",
     sidebarDepth: 2,
     nav: [
       {
-        text: '首页',
-        link: '/',
+        text: "首页",
+        link: "/",
       },
       {
-        text: '基础',
-        link: '/base/',
+        text: "基础",
+        link: "/base/",
       },
       {
-        text: 'Vue',
+        text: "框架",
         items: [
-          { text: 'Vue2', link: '/vue/vue2/' },
-          { text: 'Vuex', link: '/vue/vuex/' },
-          { text: 'VueRouter', link: '/vue/vue-router/' },
+          {
+            text: "Vue",
+            items: [
+              { text: "Vue2.0", link: "/frame/vue/vue2/" },
+              { text: "Vuex", link: "/frame/vue/vuex/" },
+              { text: "VueRouter", link: "/frame/vue/vue-router/" },
+            ],
+          },
+          {
+            text: "React",
+            items: [
+              { text: "React", link: "/frame/react/react/" },
+              { text: "ReactRouter", link: "/frame/react/react-router/" },
+              { text: "Redux", link: "/frame/react/redux/" },
+            ],
+          },
         ],
       },
       {
-        text: 'Webpack',
-        link: '/webpack/',
+        text: "打包工具",
+        items: [
+          {text: 'Webpack', link: '/bundle-tool/webpack/'},
+          {text: 'Rollup', link: '/bundle-tool/rollup/'}
+        ]
       },
       {
-        text: 'GitHub',
-        link: 'https://github.com/luguanrui?tab=repositories',
+        text: "GitHub",
+        link: "https://github.com/luguanrui?tab=repositories",
       },
     ],
     sidebar: {
-      '/base/': [
-        'html',
-        'layout',
-        'css',
-        'scope',
-        'dom',
-        'prototype-chain',
-        'communications',
-        'http',
-        'safe',
-        'algorithm',
-        'js-run',
-        'page-performance',
-        'error',
-        'change-this',
-        'debounce-throttle',
-        'es6',
-      ],
-      // '/vue/': [
-      //   ['', '目录'],
-      //   // {
-      //   //   name: 'vue',
-      //   //   collapsable: false,
-      //   //   children: [
-      //   //     ['vue2/', 'vue2'],
-      //   //     ['vuex/', 'vuex']
-      //   //   ]
-      //   // }
-      // ],
-      '/webpack/': [
-        ['', 'webpack'],
-        {
-          name: 'index',
-        },
+      "/base/": [
+        ['', '目录'],
+        "html",
+        "layout",
+        "css",
+        "scope",
+        "dom",
+        "prototype-chain",
+        "communications",
+        "http",
+        "safe",
+        "algorithm",
+        "js-run",
+        "page-performance",
+        "error",
+        "change-this",
+        "debounce-throttle",
+        "es6",
       ],
     },
-    // sidebar: {
-    //   '/base/': [
-    //     {
-    //       title: '基础',
-    //       collapsable: false,
-    //       children: [
-    //         ['html', 'html相关'],
-    //         ['layout', '页面布局'],
-    //         ['css', 'css相关'],
-    //         ['scope', '作用域和闭包'],
-    //         ['dom', 'DOM事件'],
-    //         ['prototype-chain', '原型链'],
-    //         ['communications', '通信类'],
-    //         ['http', 'HTTP'],
-    //         ['safe', '安全类'],
-    //         ['algorithm', '算法类'],
-    //         ['js-run', 'js运行机制'],
-    //         ['page-performance', '页面性能'],
-    //         ['error', '错误监控'],
-    //         ['change-this', '改变this执行'],
-    //         ['debounce-throttle', '防抖和节流'],
-    //         ['es6', 'es6']
-    //       ]
-    //     }
-    //   ],
-    //   '/vue/': [
-    //     {
-    //       title: 'Vue',
-    //       collapsable: false,
-    //       children: [
-    //         ['vue', 'vue'],
-    //         ['vue-router', 'vue-router'],
-    //         ['vuex', 'vuex']
-    //       ]
-    //     }
-    //   ],
-    //   '/webpack/': [
-    //     {
-    //       title: 'webpack',
-    //       collapsable: false,
-    //       children: [
-    //         ['webpack', 'webpack']
-    //       ]
-    //     }
-    //   ],
-    //   '/typescript/': [
-    //     {
-    //       title: 'typescript',
-    //       collapsable: false,
-    //       children: []
-    //     }
-    //   ],
-    //   '/node/': [
-    //     {
-    //       title: 'node',
-    //       collapsable: false,
-    //       children: []
-    //     }
-    //   ]
-    // }
   },
   plugins: [
-    '@vuepress/medium-zoom',
-    '@vuepress/back-to-top',
+    "@vuepress/medium-zoom",
+    "@vuepress/back-to-top",
     [
-      '@vuepress/last-updated',
+      "@vuepress/last-updated",
       {
         transformer: (timestamp, lang) => {
-          return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss')
+          return dayjs(timestamp).format("YYYY-MM-DD HH:mm:ss");
         },
       },
     ],
   ],
-}
+};

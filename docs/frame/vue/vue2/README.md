@@ -1,8 +1,12 @@
-# vue
+---
+sidebar: auto
+---
+
+# Vue2.0
 
 ## 什么是MVVM
 
-<img src="../../public/mvvm.jpg">
+<img src="../../../public/mvvm.jpg">
 
 MVVM是`Model-View-ViewModel`缩写，也就是把MVC中的Controller演变成ViewModel
 
@@ -22,7 +26,7 @@ MVVM模式有两个方向：
 
 ## Vue2.x数据绑定与响应式数据原理
 
-<img src="../../public/vue-obj.png"/>
+<img src="../../../public/vue-obj.png"/>
 
 - 监听data变化
 - 组件渲染和更新的流程
@@ -71,7 +75,7 @@ Proxy是ES6提供的一个新的API，用于修改某些操作的默认行为
 
 ## vue2.x中如何监测数组变化
 
-<img src="../../public/vue-array.png"/>
+<img src="../../../public/vue-array.png"/>
 
 使用了函数劫持的方式，`重写了数组的方法`，Vue将data中的数组进行了原型链重写，指向了自己定义的数组原型方法，包含如下方法：
 
@@ -93,7 +97,7 @@ Proxy是ES6提供的一个新的API，用于修改某些操作的默认行为
 
 生命周期图：
 
-<img class="img" src="../../public/vue-lifecycle.png" width="400">
+<img class="img" src="../../../public/vue-lifecycle.png" width="400">
 
 8个阶段：Vue 实例的创建到组件销毁的一个的过程
 
@@ -104,7 +108,7 @@ Proxy是ES6提供的一个新的API，用于修改某些操作的默认行为
 
 描述：
 
-<img class="img" src="../../public/vue-lifecycle2.jpeg" width="600" />
+<img class="img" src="../../../public/vue-lifecycle2.jpeg" width="600" />
 
 组件加载渲染过程：**beforeCreate-->created-->beforeMount-->mounted**
 
@@ -522,7 +526,7 @@ Vue3.x借鉴了`ivi算法`和 `inferno算法`：在创建VNode时就确定其类
 
 用JavaScript的树形结构对象来描述真实dom结构
 
-<img src="../../public/js-vdom.png"/>
+<img src="../../../public/js-vdom.png"/>
 
 ## 什么是 diff 算法
 
@@ -530,11 +534,11 @@ Vue3.x借鉴了`ivi算法`和 `inferno算法`：在创建VNode时就确定其类
 
 - 只比较同一层级，不跨级比较
 
-<img src="../../public/diff1.jpg"/>
+<img src="../../../public/diff1.jpg"/>
 
 - tag不相同，则直接删除掉，不再深度比较
 
-<img src="../../public/diff2.jpg"/>
+<img src="../../../public/diff2.jpg"/>
 
 - tag和key，两者都相同，则认为是相同节点，不再深度比较
 
@@ -896,7 +900,7 @@ with(obj) {
 
 ## 描述vue组件是如何渲染和更新过程
 
-<img src="../../public/render.jpg">
+<img src="../../../public/render.jpg">
 
 ::: tip 说明
 
