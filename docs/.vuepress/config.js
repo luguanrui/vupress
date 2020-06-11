@@ -11,17 +11,21 @@ module.exports = {
     lastUpdated: '上次更新',
     sidebarDepth: 2,
     nav: [
-      // {
-      //   text: '首页',
-      //   link: '/'
-      // },
+      {
+        text: '首页',
+        link: '/',
+      },
       {
         text: '基础',
         link: '/base/',
       },
       {
         text: 'Vue',
-        link: '/vue/'
+        items: [
+          { text: 'Vue2', link: '/vue/vue2/' },
+          { text: 'Vuex', link: '/vue/vuex/' },
+          { text: 'VueRouter', link: '/vue/vue-router/' },
+        ],
       },
       {
         text: 'Webpack',
@@ -49,16 +53,25 @@ module.exports = {
         'error',
         'change-this',
         'debounce-throttle',
-        'es6'
+        'es6',
       ],
-      '/vue/': [
-        'vue',
-        'vue-router',
-        'vuex'
+      // '/vue/': [
+      //   ['', '目录'],
+      //   // {
+      //   //   name: 'vue',
+      //   //   collapsable: false,
+      //   //   children: [
+      //   //     ['vue2/', 'vue2'],
+      //   //     ['vuex/', 'vuex']
+      //   //   ]
+      //   // }
+      // ],
+      '/webpack/': [
+        ['', 'webpack'],
+        {
+          name: 'index',
+        },
       ],
-      'webpack': [
-        'README'
-      ]
     },
     // sidebar: {
     //   '/base/': [
