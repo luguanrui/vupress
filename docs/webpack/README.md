@@ -50,3 +50,24 @@ Webpack 的运行流程是一个串行的过程，从启动到结束会依次执
 7. 输出完成：在确定好输出内容后，根据配置确定输出的路径和文件名，把文件内容写入到文件系统。
 
 在以上过程中，Webpack 会在特定的时间点广播出特定的事件，插件在监听到感兴趣的事件后会执行特定的逻辑，并且插件可以调用 Webpack 提供的 API 改变 Webpack 的运行结果。
+
+## 前端代码为什么要进行构建和打包
+
+## module chunk bundle分别什么意思，有何区别
+
+- module - 各源码文件
+- chunk - 多模块的合并成的，如entry、import()、splitChunk
+- bundle - 最终的输出文件
+
+## loader和plugin的区别
+
+## webpack如何实现懒加载
+
+## webpack常见的性能优化
+
+## babel-runtime和babel-polyfill的区别
+
+## webpack基本配置
+
+- 拆分配置和merge
+- 
