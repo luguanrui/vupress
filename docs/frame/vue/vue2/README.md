@@ -900,25 +900,15 @@ with(obj) {
 
 ## 描述vue组件是如何渲染和更新过程
 
-<img src="../../../public/render.jpg">
-
-::: tip 说明
-
-1. 执行render函数触发touch，触发getter，收集依赖，进去wather监听
-2. 修改data，触发setter，通知watcher数据是否收集过了，收集过了就触发重新渲染re-render
-
-vue三大模块：
-- 渲染和响应式的关系
-- 渲染和模板编译的关系
-- 渲染和vdom的关系
-:::
+<img src="./render.png">
 
 初次渲染：
 - 解析模板为render函数
 - 触发响应式，监听data属性getter setter(只有模板中使用了数据，该数据才会触发get)
 - 执行render函数，生成vnode，patch(elem, vnode)
+- patch(elem, vnode)挂在节点
   
 更新过程：
 - 修改data，触发setter
 - 重新执行render函数，生成newVnode
-- patch(vnode, newVnode)
+- patch(vnode, newVnode)，diff算法比较差异
