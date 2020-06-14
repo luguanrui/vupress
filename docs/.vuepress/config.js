@@ -72,6 +72,12 @@ module.exports = {
         "debounce-throttle",
         "es6",
       ],
+      '/frame/vue/vue2/': [
+        ['', 'vue2.0'],
+        'render',
+        'reactive',
+        'extend'
+      ]
     },
   },
   plugins: [
