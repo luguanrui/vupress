@@ -65,7 +65,7 @@ module.exports = {
         "http",
         "safe",
         "algorithm",
-        "js-run",
+        "event-loop",
         "page-performance",
         "error",
         "change-this",
