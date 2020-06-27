@@ -94,6 +94,9 @@ module.exports = {
       ],
       "/share/": [
         ["", "目录"],
+        "word-wrap",
+        "scrollInto-view",
+        "cupping",
         "keep-alive",
         "pagination-and-interaction",
         "parseInt",
