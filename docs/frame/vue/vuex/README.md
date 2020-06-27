@@ -4,7 +4,7 @@ sidebar: auto
 
 # Vuex
 
-Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。
+[Vuex](https://vuex.vuejs.org/zh/) 是一个专为 Vue.js 应用程序开发的状态管理模式。
 
 <img src="../../../public/vuex.png">
 
@@ -21,7 +21,7 @@ module | Module是store分割的模块，每个模块拥有自己的state、gett
 dispatch | 
 commit | 
 
-## vuex的使用
+## 使用
 
 基础应用：
 ```js
@@ -88,7 +88,9 @@ const user = {
 export default user
 ```
 
-## mapState,mapGetters,mapActions,mapMutations分别用在vue的什么地方
+## 辅助函数
+
+辅助函数`mapState`,`mapGetters`,`mapActions`,`mapMutations`分别用在vue的什么地方
 
 ```js
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
@@ -109,7 +111,9 @@ export default {
 }
 ```
 
-## 如何开启Vuex的严格模式？它有什么作用？
+## 严格模式
+
+如何开启Vuex的严格模式？它有什么作用？
 
 开启严格模式，仅需在创建 store 的时候传入strict: true
 
@@ -120,13 +124,15 @@ const store = new Vuex.Store({
 })
 ```
 
-## Vuex的Mutation和Action有哪些区别
+## Mutation和Action的区别
 
 - mutation是修改store中state的唯一途径
 - mutation必须是同步的
 - action可以是异步的，但是不能直接操作state，需要通过提交（commit） mutation 间接更变状态
 - mutation只要一个操作，而action可以整合多个mutation
 
-## 请谈谈你对Vuex的理解
+## 问题
+
+- 请谈谈你对Vuex的理解？
 
 Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化

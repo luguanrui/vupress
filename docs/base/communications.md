@@ -139,7 +139,9 @@ fetch('/some/url/', {
 - secure字段：设置是否只能通过https来传递此条cookie。
 - expires/Max-Age字段：设置cookie超时时间。如果设置的值为一个时间，则当到达该时间时此cookie失效。不设置的话默认是session，意思是cookie会和session一起失效，当浏览器关闭（并不是浏览器标签关闭，而是整个浏览器关闭）后，cookie失效。
 
-## cookie,session,localstorage,sessionstorage有什么区别
+## 前端存储
+
+cookie,session,localstorage,sessionstorage有什么区别
 
 ## 怎么禁止js访问cookie
 
