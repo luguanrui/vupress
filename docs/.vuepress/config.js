@@ -25,7 +25,7 @@ module.exports = {
           {
             text: "Vue",
             items: [
-              { text: "Vue2.0", link: "/frame/vue/vue2/" },
+              { text: "v2", link: "/frame/vue/v2/" },
               { text: "Vuex", link: "/frame/vue/vuex/" },
               { text: "VueRouter", link: "/frame/vue/vue-router/" },
             ],
@@ -43,7 +43,20 @@ module.exports = {
       {
         text: "打包工具",
         items: [
-          { text: "Webpack", link: "/bundle-tool/webpack/" },
+          {
+            text: "Webpack",
+            link: "/bundle-tool/webpack/",
+            items: [
+              {
+                text: "v2",
+                link: "/bundle-tool/webpack/v2",
+              },
+              {
+                text: "v4",
+                link: "/bundle-tool/webpack/v4",
+              },
+            ],
+          },
           { text: "Rollup", link: "/bundle-tool/rollup/" },
         ],
       },
@@ -87,11 +100,10 @@ module.exports = {
         "parseInt",
         "hexo",
         "vertical-and-middle",
-        "webpack2",
         "1px",
         "dy-dialog",
       ],
-      "/frame/vue/vue2/": [["", "vue2.0"], "render", "reactive", "extend"],
+      "/frame/vue/v2/": [["", "vue2.0"], "render", "reactive", "extend"],
     },
   },
   plugins: [
