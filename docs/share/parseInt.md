@@ -1,4 +1,4 @@
-# parseInt
+# parseInt的正确使用
 
 [parseInt(string, radix)](http://www.w3school.com.cn/jsref/jsref_parseInt.asp)
 

@@ -38,7 +38,7 @@
     }
 }
 ```
-## less实现
+## Less实现
 
 1. mixin.less文件：
 ```css
@@ -76,7 +76,7 @@
 }
 ```
 
-## stylus实现
+## Stylus实现
 
 1. mixin.styl文件：
 

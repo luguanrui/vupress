@@ -4,7 +4,6 @@ module.exports = {
   title: "Blog",
   base: "/",
   dest: "dist",
-  description: "个人博客",
   head: [["link", { rel: "icon", href: "/logo.png" }]],
   themeConfig: {
     displayAllHeaders: true,
@@ -101,7 +100,7 @@ module.exports = {
         "hexo",
         "vertical-and-middle",
         "1px",
-        "dy-dialog",
+        "dy-dialog"
       ],
       "/frame/vue/v2/": [["", "vue2.0"], "render", "reactive", "extend"],
     },
