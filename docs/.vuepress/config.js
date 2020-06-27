@@ -43,9 +43,17 @@ module.exports = {
       {
         text: "打包工具",
         items: [
-          {text: 'Webpack', link: '/bundle-tool/webpack/'},
-          {text: 'Rollup', link: '/bundle-tool/rollup/'}
-        ]
+          { text: "Webpack", link: "/bundle-tool/webpack/" },
+          { text: "Rollup", link: "/bundle-tool/rollup/" },
+        ],
+      },
+      {
+        text: "分享",
+        link: "/share/",
+      },
+      {
+        text: "工具函数",
+        link: "https://github.com/luguanrui/utils-library",
       },
       {
         text: "GitHub",
@@ -54,7 +62,7 @@ module.exports = {
     ],
     sidebar: {
       "/base/": [
-        ['', '目录'],
+        ["", "目录"],
         "html",
         "layout",
         "css",
@@ -72,12 +80,18 @@ module.exports = {
         "debounce-throttle",
         "es6",
       ],
-      '/frame/vue/vue2/': [
-        ['', 'vue2.0'],
-        'render',
-        'reactive',
-        'extend'
-      ]
+      "/share/": [
+        ["", "目录"],
+        "keep-alive",
+        "pagination-and-interaction",
+        "parseInt",
+        "hexo",
+        "vertical-and-middle",
+        "webpack2",
+        "1px",
+        "dy-dialog",
+      ],
+      "/frame/vue/vue2/": [["", "vue2.0"], "render", "reactive", "extend"],
     },
   },
   plugins: [

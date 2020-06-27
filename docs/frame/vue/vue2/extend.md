@@ -22,6 +22,14 @@ MVVM是`Model-View-ViewModel`缩写，也就是把`MVC`中的`Controller`演变�
 
 ### 如何实现MVVM
 
+### 阐述你所理解的MVVM响应式原理
+
+![vue-mvvm](./images/vue-mvvm.png)
+
+vue采用数据劫持，配合发布-订阅者模式的方式，通过Object.defineProperty()来劫持各个属性的getter和setter，在数据变动时，发布消息给依赖收集器，去通知观察者，做出对应的回调函数，去更新试图。
+
+MVVM作为绑定的入口，整合Observer，Compile和Watcher三者，通过Observer来监听model数据变化，通过Compile来解析模板指令，最终通过Watcher搭起了Observer和Compile之间的通信桥梁，达到数据变化 => 数据更新，视图交互变化 => 数据model变更的双向绑定效果
+
 ## 监测数组的时候如何防止触发多次get/set
 
 我们可以判断`key`是否为当前被代理对象`target`自身属性，也可以判断`旧值与新值`是否相等，只有满足以上两个条件之一时，才有可能执行`trigger`
