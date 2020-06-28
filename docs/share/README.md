@@ -1,5 +1,6 @@
 # 目录
 
+- [自动部署](./auto-deploy.md)
 - [中文数字字母文案换行](./word-wrap.md)
 - [scrollIntoView](./scrollInto-view.md)
 - [h5吸顶](./cupping.md)
