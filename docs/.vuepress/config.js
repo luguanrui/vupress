@@ -57,6 +57,7 @@ module.exports = {
             ],
           },
           { text: "Rollup", link: "/bundle-tool/rollup/" },
+          { text: "Gulp", link: "/bundle-tool/gulp/" },
         ],
       },
       {
@@ -94,6 +95,7 @@ module.exports = {
       ],
       "/share/": [
         ["", "目录"],
+        "dynamic-table",
         "auto-deploy",
         "word-wrap",
         "scrollInto-view",
