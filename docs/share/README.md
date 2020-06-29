@@ -1,5 +1,7 @@
 # 目录
 
+- [获取某年某个月的最后一天](./date.md)
+- [动态表格](./dynamic-table.md)
 - [自动部署](./auto-deploy.md)
 - [中文数字字母文案换行](./word-wrap.md)
 - [scrollIntoView](./scrollInto-view.md)

@@ -95,6 +95,7 @@ module.exports = {
       ],
       "/share/": [
         ["", "目录"],
+        "date",
         "dynamic-table",
         "auto-deploy",
         "word-wrap",
