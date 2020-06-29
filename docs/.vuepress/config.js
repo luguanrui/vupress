@@ -8,7 +8,7 @@ module.exports = {
   themeConfig: {
     displayAllHeaders: true,
     lastUpdated: "上次更新",
-    sidebarDepth: 2,
+    sidebarDepth: 1,
     nav: [
       {
         text: "首页",
@@ -109,7 +109,7 @@ module.exports = {
         "1px",
         "dy-dialog"
       ],
-      "/frame/vue/v2/": [["", "vue2.0"], "render", "reactive", "extend"],
+      "/frame/vue/v2/": [["", "目录"], "reactive","render","virtual-dom", "extend"],
     },
   },
   plugins: [
