@@ -1,60 +1,29 @@
-# Observe类的简单实现
+作用：通过给非 VNode 的对象类型数据添加一个 Observer，用来监测数据的变化
 
+关键步骤：实例化Observe
+
+源码：
 ```js
-let myVue = new MyVue({
-    el: '#app',
-    data: {
-        school: '安庆师范大学',
-        info: {
-            name: '小明',
-            age: 12
-        }
-    }
-})
-
-function MyVue(options = {}) {
-  this.$options = options;
-  var data = (this._data = this.$options.data);
-  observe(data);
-
-  // 数据代理，用this代理 this._data，可以使用this直接访问data中的属性
-  for (let key in data) {
-    Object.defineProperty(this, key, {
-      enumerable: true,
-      get() {
-        return this._data[key]; // 会走到Observe方法中的get
-      },
-      set() {
-        this._data[key] = newValue; // 会走到Observe方法中的set
-      },
-    });
+export function observe (value: any, asRootData: ?boolean): Observer | void {
+  if (!isObject(value) || value instanceof VNode) {
+    return
   }
-}
-
-// 观察对象
-function observe(data) {
-  if (typeof data !== "object") return;
-  return new Observe(data);
-}
-
-function Observe(data) {
-  for (let key in data) {
-    let val = data[key];
-    observe(val); // 递归观察对象
-    Object.defineProperty(data, key, {
-      enumerable: true,
-      get() {
-        return val;
-      },
-      set(newValue) {
-        if (newValue === val) {
-          return;
-        }
-        val = newValue;
-        observe(newValue); // 深度响应式，更改数据后，新数据没有get set
-      },
-    });
+  let ob: Observer | void
+  if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+    ob = value.__ob__
+  } else if (
+    shouldObserve &&
+    !isServerRendering() &&
+    (Array.isArray(value) || isPlainObject(value)) &&
+    Object.isExtensible(value) &&
+    !value._isVue
+  ) {
+    // 实例化Observe
+    ob = new Observer(value)
   }
+  if (asRootData && ob) {
+    ob.vmCount++
+  }
+  return ob
 }
-
 ```
