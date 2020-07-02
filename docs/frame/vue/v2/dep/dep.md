@@ -1,5 +1,22 @@
+## Dep类
+
+
 ```js
+/* @flow */
+
+import type Watcher from './watcher'
+import { remove } from '../util/index'
+import config from '../config'
+
 let uid = 0
+
+/**
+ * getter 依赖收集的核心，是对 Watcher 的一种管理
+ *
+ * A dep is an observable that can have multiple
+ * directives subscribing to it.
+ *
+ */
 export default class Dep {
   static target: ?Watcher; // target是全局的 Watcher
   id: number;
@@ -54,4 +71,22 @@ export default class Dep {
     }
   }
 }
+
+// The current target watcher being evaluated.
+// This is globally unique because only one watcher
+// can be evaluated at a time.
+Dep.target = null
+const targetStack = [] // 定义数组用来存在每个watcher对象
+
+// 将watcher push进targetStack，然后将target在赋值给 Dep.target
+export function pushTarget (target: ?Watcher) {
+  targetStack.push(target)
+  Dep.target = target
+}
+// 将watcher pop()出栈targetStack，然后，将targetStack的最后一个watcher赋值给 Dep.target
+export function popTarget () {
+  targetStack.pop()
+  Dep.target = targetStack[targetStack.length - 1]
+}
+
 ```

@@ -77,6 +77,7 @@ export default class Watcher {
       ? expOrFn.toString()
       : ''
     // parse expression for getter
+    // expOrFn是字符串还是函数
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn
     } else {
@@ -120,7 +121,7 @@ export default class Watcher {
       if (this.deep) {
         traverse(value)
       }
-      // 出站
+      // 出栈
       popTarget()
       this.cleanupDeps()
     }
@@ -177,9 +178,10 @@ export default class Watcher {
    */
   update () {
     /* istanbul ignore else */
+    // 如果用户定义了 lazy ，this.lazy 是描述符
     if (this.lazy) {
       this.dirty = true
-    } else if (this.sync) {
+    } else if (this.sync) {// this.sync 表示是否改变了值之后立即触发回调。如果用户定义为true，则立即执行 this.run
       this.run()
     } else {
       // queueWatcher 内部也是执行的 watcher实例的 run 方法，只不过内部调用了 nextTick 做性能优化。

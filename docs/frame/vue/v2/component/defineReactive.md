@@ -1,8 +1,8 @@
 作用：
 
 1. 利用 Object.defineProperty 给数据添加了 getter 和 setter
-2. getter 做的事情是依赖收集
-3. setter 做的事情是派发更新
+2. getter 做的事情是依赖收集 - `dep.depend()`
+3. setter 做的事情是派发更新 - `dep.notify()`
 
 关键步骤：
 
