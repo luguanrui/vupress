@@ -11,7 +11,7 @@
 实现：
 
 ```js
-function debounce(fn, delay) {
+function debounce(fn, delay = 200) {
     let timer = null
     return (...arg) => {
         clearTimeout(timer)
@@ -36,7 +36,7 @@ function debounce(fn, delay) {
 
 实现：
 ```js
-function throttle(fn delay) {
+function throttle(fn, delay = 200) {
     let flag = true
     return (...args) => {
         if (!flag) return
