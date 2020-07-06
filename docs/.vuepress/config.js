@@ -109,7 +109,7 @@ module.exports = {
         "1px",
         "dy-dialog"
       ],
-      "/frame/vue/v2/": [["", "目录"], "reactive","render","virtual-dom", "extend"],
+      "/frame/vue/v2/": [["", "目录"], "reactive","render", "extend"],
     },
   },
   plugins: [

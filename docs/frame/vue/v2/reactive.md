@@ -57,4 +57,6 @@ Dep是Watcher实例的管理者。Dep 是一个类，用于依赖收集和派发
   
 [Watcher](./watcher/watcher.md)的关键步骤：
 
-- 
+- get
+- addDep：依赖收集
+- update：派发更新，触发组件重新渲染

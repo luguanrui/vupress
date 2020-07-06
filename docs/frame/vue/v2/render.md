@@ -37,13 +37,13 @@ with(obj) {
 
 ## 虚拟DOM
 
-## 什么是虚拟DOM
+### 什么是虚拟DOM
 
 用JavaScript的树形结构对象来描述真实dom结构
 
 <img src="../../../public/js-vdom.png"/>
 
-## 什么是 diff 算法
+### 什么是 diff 算法
 
 比对(diff)渲染更新前后产生的两个虚拟dom对象的差异，并产出差异补丁对象，再将差异补丁对象应用到真实dom节点上
 
@@ -57,7 +57,7 @@ with(obj) {
 
 - tag和key，两者都相同，则认为是相同节点，不再深度比较
 
-## 再说一下虚拟Dom以及key属性的作用
+### 再说一下虚拟Dom以及key属性的作用
 
 虚拟Dom的产生原因：由于在浏览器中操作DOM是很昂贵的。频繁的操作DOM，会产生一定的性能问题
 
@@ -71,7 +71,7 @@ with(obj) {
 
 需要在新旧 children 的节点中保存映射关系，以便能够在旧 children 的节点中找到可复用的节点。key也就是children中节点的唯一标识。
 
-## Vue2.x和Vue3.x渲染器的diff算法分别说一下
+### Vue2.x和Vue3.x渲染器的diff算法分别说一下
 
 简单来说，diff算法有以下过程:
 
@@ -86,7 +86,7 @@ Vue2.x的核心Diff算法采用了双端比较的算法，同时从新旧childre
 
 Vue3.x借鉴了`ivi算法`和 `inferno算法`：在创建VNode时就确定其类型，以及在mount/patch的过程中采用位运算来判断一个VNode的类型，在这个基础之上再配合核心的Diff算法，使得性能上较Vue2.x有了提升；该算法中还运用了动态规划的思想求解最长递归子序列
 
-## 实现一个虚拟DOM
+### 实现一个虚拟DOM
 
 [实现](https://github.com/luguanrui/virtualDOM)
 
