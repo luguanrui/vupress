@@ -42,7 +42,7 @@ var o4 = Object.create(p)
 
 ### 原型、构造函数、实例、原型链的关系
 
-<img src="https://note.youdao.com/yws/api/personal/file/WEBd244d38abd1db470324f76dadc1173fc?method=download&shareKey=476880ad86fa9baf2d8a9804b11a9ec4" />
+![constructor](./images/constructor.png)
 
 说明：
 
