@@ -95,6 +95,7 @@ module.exports = {
       ],
       "/share/": [
         ["", "目录"],
+        "vue-lazyload",
         "date",
         "dynamic-table",
         "auto-deploy",
