@@ -42,7 +42,7 @@ new Vue({
 ## 前置知识
 
 1. 首先我们需要了解[rollupjs](https://www.rollupjs.com/)打包工具的相关知识
-2. 由于vue-lazyload是使用插件的形式让我们使用的，不了解vue插件相关知识的同学，可以先看下官网[vue插件](https://cn.vuejs.org/v2/guide/plugins.html)的内容
+2. 由于vue-lazyload是以插件的形式提供给使用者使用，不了解vue插件相关知识的同学，可以先看下官网[vue插件](https://cn.vuejs.org/v2/guide/plugins.html)的内容
 
 使用插件：
 ```js
@@ -58,7 +58,7 @@ MyPlugin.install = function (Vue, options) {
     // 逻辑...
   }
 
-  // 2. 添加全局资源
+  // 2. 添加全局指令
   Vue.directive('my-directive', {
     bind (el, binding, vnode, oldVnode) {
       // 逻辑...
@@ -78,6 +78,8 @@ MyPlugin.install = function (Vue, options) {
   Vue.prototype.$myMethod = function (methodOptions) {
     // 逻辑...
   }
+  // 5. 添加全局
+  Vue.component('', function() {})
 }
 ```
 
@@ -127,4 +129,75 @@ directives: {
 - vnode：Vue 编译生成的虚拟节点。移步 VNode API 来了解更多详情。
 - oldVnode：上一个虚拟节点，仅在 update 和 componentUpdated 钩子中可用。
   
-## 入口文件
+4. 图片懒加载的原理
+  
+## 分析
+
+### 项目目录
+
+```bash
+├── src
+│   ├── index.js
+│   ├── lazy-component.js
+│   ├── lazy-container.js
+│   ├── lazy-image.js
+│   ├── lazy.js
+│   ├── listener.js
+│   └── util.js
+```
+
+### 入口文件
+
+`index.js`是入口文件, 包含了一些vue1.0版本相关的兼容性代码，vue3.0即将在8月份来临，还有人在用vue1.0？因此，我们注释掉vue1.0相关的兼容性代码，直接看vue2.0相关的代码如下：
+
+```js
+import Lazy from './lazy'
+import LazyComponent from './lazy-component'
+import LazyContainer from './lazy-container'
+import LazyImage from './lazy-image'
+
+export default {
+  install (Vue, options = {}) {
+    const LazyClass = Lazy(Vue)
+    const lazy = new LazyClass(options)
+    const lazyContainer = new LazyContainer({ lazy })
+    Vue.prototype.$Lazyload = lazy
+    if (options.lazyComponent) {
+      Vue.component('lazy-component', LazyComponent(lazy))
+    }
+    if (options.lazyImage) {
+      Vue.component('lazy-image', LazyImage(lazy))
+    }
+    Vue.directive('lazy', {
+      bind: lazy.add.bind(lazy),
+      update: lazy.update.bind(lazy),
+      componentUpdated: lazy.lazyLoadHandler.bind(lazy),
+      unbind: lazy.remove.bind(lazy)
+    })
+    Vue.directive('lazy-container', {
+      bind: lazyContainer.bind.bind(lazyContainer),
+      componentUpdated: lazyContainer.update.bind(lazyContainer),
+      unbind: lazyContainer.unbind.bind(lazyContainer)
+    })
+  }
+}
+```
+入口文件做了以下工作：
+
+- 提供vue注册插件的入口方法`install`
+- 实例化lazy类
+- 将lazy类绑定到vue的原型方法`$Lazyload`上
+- 全局注册组件：`lazy-component`,`lazy-image`
+- 全局注册指令：`v-lazy`, `v-lazy-container`
+
+### lazy
+
+### listener
+
+### util
+
+### lazy-component
+
+### lazy-container
+
+### lazy-image
