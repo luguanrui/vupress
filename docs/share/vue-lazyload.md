@@ -21,31 +21,43 @@ Vue.use(MyPlugin, { someOption: true })
 ```js
 MyPlugin.install = function (Vue, options) {
   // 1. 添加全局方法或 property
-  Vue.myGlobalMethod = function () {
-    // 逻辑...
-  }
+  Vue.myGlobalMethod = function () { /* 逻辑... */ }
   // 2. 添加全局指令
   Vue.directive('my-directive', {
-    bind (el, binding, vnode, oldVnode) {
-      // 逻辑...
-    }
-    ...
+    // 指令第一次绑定到元素时调用，做初始化设置
+    bind (el, binding, vnode, oldVnode) { /* 逻辑... */ }, 
+    // 被绑定元素插入父节点时调用
+    inserted (el, binding, vnode, oldVnode) { /* 逻辑... */ },
+    // 所在组件的 虚拟DOM 更新时调用
+    update (el, binding, vnode, oldVnode) { /* 逻辑... */ },
+    // 指令所在组件的 虚拟DOM 及其子 虚拟DOM 全部更新后调用
+    componentUpdated (el, binding, vnode, oldVnode) { /* 逻辑... */ },
+    // 指令与元素解绑时调用
+    unbind (el, binding, vnode, oldVnode) { /* 逻辑... */ }
   })
   // 3. 注入组件选项
   Vue.mixin({
-    created: function () {
-      // 逻辑...
-    }
+    created: function () { /* 逻辑... */ }
     ...
   })
   // 4. 添加实例方法
-  Vue.prototype.$myMethod = function (methodOptions) {
-    // 逻辑...
-  }
+  Vue.prototype.$myMethod = function (methodOptions) { /* 逻辑... */ }
   // 5. 添加全局组件
   Vue.component('', function() {})
 }
 ```
+指令钩子函数的四个参数如下：
+
+- el：指令所绑定的DOM元素
+- binding：一个对象，包含以下属性：
+    - name：指令名，不包括 `v-` 前缀。
+    - value：指令的绑定值，例如`v-my-directive="1 + 1"` 中，绑定值为 `2`。
+    - oldValue：指令绑定的前一个值，仅在 `update` 和 `componentUpdated` 钩子中可用
+    - expression：字符串形式的指令表达式。例如 `v-my-directive="1 + 1"` 中，表达式为 `"1 + 1"`。
+    - arg：传给指令的参数，可选。例如 `v-my-directive:foo` 中，参数为 `"foo`"。
+    - modifiers：一个包含修饰符的对象。例如 `v-my-directive.foo.bar` 中，修饰符对象为 `{ foo: true, bar: true }`
+- vnode：Vue 编译生成的虚拟节点
+- oldVnode：上一个虚拟节点，仅在 update 和 componentUpdated 钩子中可用
 
 3. [vue自定义指令](https://cn.vuejs.org/v2/guide/custom-directive.html)
 
@@ -79,27 +91,6 @@ directives: {
 ```
 
 了解完了指令的注册使用，接下来重点就是怎么自己写指令了，vue官方给指令提供了`钩子函数`，方便开发者来自定义指令。
-
-钩子函数：
-
-- bind：指令第一次绑定到元素时调用，做初始化设置
-- inserted：被绑定元素插入父节点时调用
-- update：所在组件的 虚拟DOM 更新时调用
-- componentUpdated：指令所在组件的 虚拟DOM 及其子 虚拟DOM 全部更新后调用
-- unbind：指令与元素解绑时调用
-
-钩子函数的参数：
-
-- el：指令所绑定的DOM元素
-- binding：一个对象，包含以下属性：
-    - name：指令名，不包括 `v-` 前缀。
-    - value：指令的绑定值，例如`v-my-directive="1 + 1"` 中，绑定值为 `2`。
-    - oldValue：指令绑定的前一个值，仅在 `update` 和 `componentUpdated` 钩子中可用
-    - expression：字符串形式的指令表达式。例如 `v-my-directive="1 + 1"` 中，表达式为 `"1 + 1"`。
-    - arg：传给指令的参数，可选。例如 `v-my-directive:foo` 中，参数为 `"foo`"。
-    - modifiers：一个包含修饰符的对象。例如 `v-my-directive.foo.bar` 中，修饰符对象为 `{ foo: true, bar: true }`
-- vnode：Vue 编译生成的虚拟节点
-- oldVnode：上一个虚拟节点，仅在 update 和 componentUpdated 钩子中可用
 
 4. 全局组件注册
 
@@ -241,6 +232,28 @@ export default {
   }
 }
 ```
+
+由上面的分析，可以看出来，入口文件做了如下几件事：
+
+- 提供了注册插件的方法
+- 注册 `lazy-component`, `lazy-image` 全局组件
+- 注册 `v-lazy`, `v-lazy-container` 全局指令
+
+使用如下的方式来使用自定义指令：
+
+注册插件：
+```js
+import VueLazyload from 'vue-lazyload'
+
+Vue.use(Lazyload, { /* 自定义参数 */ })
+```
+
+使用指令：
+```vue
+<img v-lazy="img.src" />
+```
+
+当我们使用`v-lazy`指令的时候，首先会触发定义的钩子函数`bind`，也就是`lazy.add`方法，而这个方法是定义在`Lazy`类当中的，因此接下来，我们来分析下`Lazy`类的实现
 
 ## lazy
 
