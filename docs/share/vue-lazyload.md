@@ -109,6 +109,10 @@ Vue.component('my-component-name', ComponentA)
    
 一句话概括：当图片出现在视口中时，再去加载图片
 
+具体实现步骤：
+- 将图片的`url`存放到`data-src`中
+- 当图片出现在视口中时，再将`data-src`的值赋给`src`
+
 如何判断图片是否出现在视口中：
 
 - 事件监听
@@ -257,7 +261,15 @@ Vue.use(Lazyload, { /* 自定义参数 */ })
 
 ## lazy
 
+当指令第一次绑定到元素时，会调用`lazy.add`的方法，先看下`add`方法的大致实现方式：
+
+![](./vue-lazyload/add.png)
+
+可以看出，插件内部维护了一个监听队列`ListenerQueue`，来存储图片，通过遍历这个监听队列，最终实现每张图片的懒加载
+
 ## listener
+
+主要是维护`ReactiveListener`类
 
 ## util
 
