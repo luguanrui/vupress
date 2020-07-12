@@ -2,14 +2,14 @@
 
 ## 为什么要阅读vue-lazyload
 
-我们都知道，当一个页面中需要加载的图片太多，如果一次性加载完，会浪费网络资源，而且页面加载也会很慢，用户体验非常的不好。因此，我们需要图片懒加载这种技术手段来帮助我们处理这个问题，那么这个时候呢，不明白图片懒加载原理的同学，可能就要开始网上冲浪...
+在开发项目过程中，经常会遇到一个问题，当一个页面中需要加载大量的图片，如果一次性加载完，会浪费网络资源不说，而且页面加载也会很慢，用户体验非常的不好。因此，需要图片懒加载这种技术手段来处理这个问题，然而平时项目都比较赶，最快的方式就去找一个插件来使用。而我选择了[vue-lazyload](https://github.com/hilongjw/vue-lazyload)这款插件，主要原因是在github上star相对来说比较多。
 
-那么今天，我就找来了一款，github上star还挺多的一款插件，带同学来分析分析他的具体实现，可能从此你会爱上写插件
+为了不做一个拿来主义者，利用业余时间读下源码，给自己充充电
 
 ## 预备知识
 
 1. 打包工具[rollupjs](https://www.rollupjs.com/)
-2. [vue插件系统](https://cn.vuejs.org/v2/guide/plugins.html)
+2. [vue插件](https://cn.vuejs.org/v2/guide/plugins.html)系统
 
 使用插件：
 ```js
@@ -46,7 +46,7 @@ MyPlugin.install = function (Vue, options) {
   Vue.component('', function() {})
 }
 ```
-指令钩子函数的四个参数如下：
+指令钩子函数的四个参数`el`，`binding`，`vnode`，`oldVnode`说明如下：
 
 - el：指令所绑定的DOM元素
 - binding：一个对象，包含以下属性：
@@ -89,8 +89,6 @@ directives: {
 ```vue
 <input v-focus>
 ```
-
-了解完了指令的注册使用，接下来重点就是怎么自己写指令了，vue官方给指令提供了`钩子函数`，方便开发者来自定义指令。
 
 4. 全局组件注册
 
@@ -157,9 +155,7 @@ new Vue({
 
 5. 以上步骤完成之后，我们就可以在自己的项目随便的调试源码了，是不是so easy
 
-## 概要
-
-项目目录如下：
+## 项目目录
 
 ```bash
 ├── src
@@ -171,8 +167,6 @@ new Vue({
 │   ├── listener.js
 │   └── util.js
 ```
-
-看了这个项目目录你是不是很觉得，**自定义指令这么简单的嘛,不管你是不是这样想，反正我看了是信心倍增，距离赢取白富美又近了一步...,下面就正式开始对这七个文件进行逐一分析
 
 ## index
 
@@ -239,7 +233,7 @@ export default {
 
 由上面的分析，可以看出来，入口文件做了如下几件事：
 
-- 提供了注册插件的方法
+- 提供了注册插件的入口`install`
 - 注册 `lazy-component`, `lazy-image` 全局组件
 - 注册 `v-lazy`, `v-lazy-container` 全局指令
 
@@ -265,7 +259,124 @@ Vue.use(Lazyload, { /* 自定义参数 */ })
 
 ![](./vue-lazyload/add.png)
 
-可以看出，插件内部维护了一个监听队列`ListenerQueue`，来存储图片，通过遍历这个监听队列，最终实现每张图片的懒加载
+可以看出，插件内部维护了一个监听队列`ListenerQueue`，来存储图片，通过遍历这个监听队列，最终实现图片的懒加载
+
+为了有一个全局观，我们先看下代码结构，再去具体分析：
+
+```js
+import { /* 一系列的工具方法 */} from "./util";
+import ReactiveListener from "./listener";
+export default function(Vue) {
+  return class Lazy {
+    constructor({preLoad, error,throttleWait,/* ...还有很多传入的参数 */}) {
+      this.ListenerQueue = [];
+      this.TargetIndex = 0;
+      this.TargetQueue = [];
+      this.options = {
+        silent: silent, 
+        dispatchEvent: !!dispatchEvent,
+        throttleWait: throttleWait || 200, 
+        // ...还有很多的属性
+      };
+      this._initEvent();
+      this._imageCache = new ImageCache({ max: 200 });
+      this.lazyLoadHandler = throttle(
+        this._lazyLoadHandler.bind(this),
+        this.options.throttleWait
+      );
+      this.setMode(this.options.observer ? modeType.observer : modeType.event);
+    }
+    addLazyBox(vm) {}
+    add(el, binding, vnode) {}
+    update(el, binding, vnode) {}
+    remove(el) {}
+    removeComponent() {}
+    setMode(mode) {}
+    _addListenerTarget(el) {}
+    _removeListenerTarget(el) {}
+    _initListen(el, start) {}
+    _initEvent() {}
+    _lazyLoadHandler() {}
+    _initIntersectionObserver() {}
+    _observerHandler(entries, observer) {}
+    _elRenderer(listener, state, cache) {}
+    _valueFormatter(value) {}
+  }
+}
+
+```
+
+`adds()`的实现：
+
+```js
+add(el, binding, vnode) {
+  // 如果已存在则更新
+  if (some(this.ListenerQueue, (item) => item.el === el)) {
+    this.update(el, binding);
+    return Vue.nextTick(this.lazyLoadHandler);
+  }
+  // 根据binding.value，获取图片的真是src, loading, error
+  // cors获取不到，因为_valueFormatter没有返回cors
+  let { src, loading, error, cors } = this._valueFormatter(binding.value);
+
+  // 由于这个时候DOM还没有渲染完成，需要做一些dom的操作，必须在nextTick中完成
+  Vue.nextTick(() => {
+    //  如果el不是img标签 或者 该dom不包含属性data-srcset使用src
+    src = getBestSelectionFromSrcset(el, this.options.scale) || src;
+
+    // 使用交叉观察者模式观察dom元素
+    this._observer && this._observer.observe(el);
+
+    // 获取修饰符
+    const container = Object.keys(binding.modifiers)[0];
+
+    // 定义父级dom元素
+    let $parent;
+    // 如果修饰符存在 ???
+    if (container) {
+      $parent = vnode.context.$refs[container];
+      // if there is container passed in, try ref first, then fallback to getElementById to support the original usage
+      $parent = $parent
+        ? $parent.$el || $parent
+        : document.getElementById(container);
+    }
+
+    if (!$parent) {
+      // 返回window对象
+      $parent = scrollParent(el);
+    }
+
+    const newListener = new ReactiveListener({
+      // bindType，传给指令的参数,例如 v-lazy:background-image="imgUrl" 中，参数为 "background-image"
+      // 目前就是css的background-image属性
+      bindType: binding.arg, 
+      $parent, // 父级dom元素
+      el, // 当前dom元素
+      loading, // 图片loading地址
+      error, // 图片error地址
+      src, // 图片真实src地址
+      cors, // 这是获取不到的
+      elRenderer: this._elRenderer.bind(this), // 实例化ReactiveListener的时候会执行，传入参数 "loading", false
+      options: this.options, // 参数
+      imageCache: this._imageCache, // 图片缓存实例
+    });
+
+    // ListenerQueue 添加 listener
+    this.ListenerQueue.push(newListener);
+
+    if (inBrowser) {
+      // TargetQueue 添加 target，
+      // 为DOM元素（el）遍历监听事件，添加事件监听，el分别设置为：window，$parent
+      this._addListenerTarget(window);
+      this._addListenerTarget($parent);
+    }
+    // 执行懒加载
+    this.lazyLoadHandler();
+    // 有无必要在嵌套一个异步更新DOM???
+    // Vue.nextTick(() => this.lazyLoadHandler());
+  });
+}
+```
 
 ## listener
 
