@@ -24,15 +24,15 @@ MyPlugin.install = function (Vue, options) {
   Vue.myGlobalMethod = function () { /* 逻辑... */ }
   // 2. 添加全局指令
   Vue.directive('my-directive', {
-    // 指令第一次绑定到元素时调用，做初始化设置
+    // 指令第一次绑定到元素时调用，做初始化设置（只调用一次）
     bind (el, binding, vnode, oldVnode) { /* 逻辑... */ }, 
     // 被绑定元素插入父节点时调用
     inserted (el, binding, vnode, oldVnode) { /* 逻辑... */ },
-    // 所在组件的 虚拟DOM 更新时调用
+    // 所在组件的 虚拟DOM 更新时调用(虚拟DOM更新前，生命周期为beforeUpdate())
     update (el, binding, vnode, oldVnode) { /* 逻辑... */ },
-    // 指令所在组件的 虚拟DOM 及其子 虚拟DOM 全部更新后调用
+    // 指令所在组件的 虚拟DOM 及其子 虚拟DOM 全部更新后调用（虚拟DOM更新前后,生命周期为updated()）
     componentUpdated (el, binding, vnode, oldVnode) { /* 逻辑... */ },
-    // 指令与元素解绑时调用
+    // 指令与元素解绑时调用（当前组件销毁 或者 指令绑定的元素存在v-if为false）（只调用一次）
     unbind (el, binding, vnode, oldVnode) { /* 逻辑... */ }
   })
   // 3. 注入组件选项
@@ -373,8 +373,76 @@ add(el, binding, vnode) {
     // 执行懒加载
     this.lazyLoadHandler();
     // 有无必要在嵌套一个异步更新DOM???
-    // Vue.nextTick(() => this.lazyLoadHandler());
+    Vue.nextTick(() => this.lazyLoadHandler());
   });
+}
+```
+
+::: warning 疑问
+有必要在`Vue.nextTick`中再次去调用一次`Vue.nextTick(() => this.lazyLoadHandler());`？？？
+:::
+
+`update()`方法的流程：
+
+![](./vue-lazyload/update.png)
+
+`update()`的实现源码如下：
+```js
+update(el, binding, vnode) {
+  let { src, loading, error } = this._valueFormatter(binding.value);
+  src = getBestSelectionFromSrcset(el, this.options.scale) || src;
+
+  // 查询监听队列中图片监听器是否已存在
+  const exist = find(this.ListenerQueue, (item) => item.el === el);
+  if (!exist) {
+    // 如果不存在则调用 add方法
+    this.add(el, binding, vnode);
+  } else {
+    // 如果已存在，则调用图片监听器的update方法，替换图片的src
+    exist.update({
+      src,
+      loading,
+      error,
+    });
+  }
+  // 如果是使用 IntersectionObserver api，则先取消观察，在重新观察
+  if (this._observer) {
+    this._observer.unobserve(el);
+    this._observer.observe(el);
+  }
+  this.lazyLoadHandler();
+  Vue.nextTick(() => this.lazyLoadHandler());
+}
+```
+
+::: warning 疑问
+在指令钩子函数`componentUpdated`已经调用了一次`lazyLoadHandler`，是否又不要再次调用一次`Vue.nextTick(() => this.lazyLoadHandler());`？？？
+:::
+
+
+`remove()`方法的流程图：
+
+![](./vue-lazyload/remove.png)
+
+`remove()`的源码：
+
+```js
+remove(el) {
+  if (!el) return;
+  this._observer && this._observer.unobserve(el);
+  const existItem = find(this.ListenerQueue, (item) => item.el === el);
+  // 如果存在
+  if (existItem) {
+    // 为什么要执行两次，因为add()方法中_addListenerTarget执行了两次，分别传入window，$parent
+    // 删除 TargetQueue 中指定的el
+    this._removeListenerTarget(existItem.$parent);
+    // 删除 TargetQueue 中指定的el
+    this._removeListenerTarget(window);
+    // 删除 ListenerQueue 中指定的 listener
+    remove(this.ListenerQueue, existItem);
+    // 初始化这部分数据
+    existItem.$destroy();
+  }
 }
 ```
 
@@ -382,10 +450,324 @@ add(el, binding, vnode) {
 
 主要是维护`ReactiveListener`类
 
-## util
+```js
+import { loadImageAsync, ObjectKeys, noop } from "./util";
 
+export default class ReactiveListener {
+  constructor({
+    el, // 当前dom元素
+    src, // 图片的真实url
+    error, // 图片加载错误的url
+    loading, // 图片加载中的url
+    bindType, // css属性
+    $parent, // 父元素
+    options, // 参数
+    cors, // 跨域
+    elRenderer, // dom元素渲染
+    imageCache, // 图片缓存
+  }) {
+    this.el = el; // 当前dom元素
+    this.src = src; // 图片的真实 url
+    this.error = error; // 图片加载错误的 url
+    this.loading = loading; // 图片加载中的 url
+    this.bindType = bindType; // css属性
+    this.attempt = 0; // 尝试加载次数
+    this.cors = cors; // 跨域
+
+    this.naturalHeight = 0; // 真实高度
+    this.naturalWidth = 0; // 真实宽度
+
+    this.options = options; // 参数
+
+    this.rect = null; // getBoundingClientRect 对象
+
+    this.$parent = $parent; // 父元素
+    this.elRenderer = elRenderer; // dom元素渲染
+    this._imageCache = imageCache; // 图片缓存
+
+    // 性能
+    this.performanceData = {
+      init: Date.now(),
+      loadStart: 0,
+      loadEnd: 0,
+    };
+
+    // 通过自定义方法，动态修改图片的src
+    this.filter();
+    // 初始化状态
+    // 将图片的url设置到data-src，初始化state的loading，error，loaded，rendered都为false
+    this.initState();
+    // 初始化渲染，传入图片加载状态loading，缓存状态false
+    this.render("loading", false);
+  }
+
+  /*
+   * 初始化状态
+   * init listener state
+   * 作用：
+   * 1. 将图片的url设置到自定义的 data-src 属性上
+   * 2. 初始化 this.state 对象，loading，error，loaded，rendered
+   */
+  initState() {
+    // 设置 data-src
+    // 处理dataset的兼容性问题，https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset
+    if ("dataset" in this.el) {// 通过in方法，判断 dataset属性 是否 存在与DOM对象上
+      // 通过 dataset 设置自定义属性 data-src
+      this.el.dataset.src = this.src;
+    } else {
+      // 通过 setAttribute 设置自定义属性 data-src
+      this.el.setAttribute("data-src", this.src);
+    }
+
+    // 初始化状态
+    this.state = {
+      loading: false,
+      error: false,
+      loaded: false,
+      rendered: false,
+    };
+  }
+
+  /*
+   * 记录执行时间
+   * record performance
+   * @return
+   */
+  record(event) {
+    this.performanceData[event] = Date.now();
+  }
+
+  /*
+   * 如果老的图片url 不等于 新的url，则，初始化initState，src为新的url
+   * update image listener data
+   * @param  {String} image uri
+   * @param  {String} loading image uri
+   * @param  {String} error image uri
+   * @return
+   */
+  update({ src, loading, error }) {
+    const oldSrc = this.src;
+    this.src = src;
+    this.loading = loading;
+    this.error = error;
+    // 通过自定义方法，动态修改图片的src
+    this.filter();
+    if (oldSrc !== this.src) {
+      this.attempt = 0;
+      this.initState();
+    }
+  }
+
+  /*
+   * get el node rect
+   * @return
+   */
+  getRect() {
+    // https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getBoundingClientRect
+    this.rect = this.el.getBoundingClientRect();
+  }
+
+  /*
+   * 当前元素是否出现在视口中, true-是，false-否
+   *  check el is in view
+   * @return {Boolean} el is in view
+   */
+  checkInView() {
+    this.getRect();
+    return (
+      this.rect.top < window.innerHeight * this.options.preLoad &&
+      this.rect.bottom > this.options.preLoadTop &&
+      this.rect.left < window.innerWidth * this.options.preLoad &&
+        this.rect.right > 0
+    );
+  }
+
+  /*
+   * 通过自定义方法，动态修改图片的src
+   * listener filter
+   */
+  filter() {
+    ObjectKeys(this.options.filter).map((key) => {
+      // 执行过滤函数
+      this.options.filter[key](this, this.options);
+    });
+  }
+
+  /*
+   * 渲染loading
+   * render loading first
+   * @params cb:Function
+   * @return
+   */
+  renderLoading(cb) {
+    // 图片的loading状态更改为true
+    this.state.loading = true;
+
+    // 异步渲染图片
+    loadImageAsync(
+      {
+        src: this.loading,
+        cors: this.cors,
+      },
+      (data) => {
+        this.render("loading", false);
+        // 图片的loading状态更改为false
+        this.state.loading = false;
+        cb();
+      },
+      () => {
+        // handler `loading image` load failed
+        cb();
+        // 图片的loading状态更改为false
+        this.state.loading = false;
+        if (!this.options.silent)
+          console.warn(
+            `VueLazyload log: load failed with loading image(${this.loading})`
+          );
+      }
+    );
+  }
+
+  /*
+   * 加载图片，并渲染出来
+   * try load image and  render it
+   * @return
+   */
+  load(onFinish = noop) {
+    // 尝试加载次数大于自定义的尝试加载次数，并his.state.error
+    if (this.attempt > this.options.attempt - 1 && this.state.error) {
+      if (!this.options.silent)
+        console.log(
+          `VueLazyload log: ${this.src} tried too more than ${this.options.attempt} times`
+        );
+      onFinish();
+      return;
+    }
+
+    // 图片已加载并渲染
+    if (this.state.rendered && this.state.loaded) return;
+
+    // 图片已缓存
+    if (this._imageCache.has(this.src)) {
+      this.state.loaded = true; // 加载图片
+      this.render("loaded", true);
+      this.state.rendered = true; // 渲染图片
+      return onFinish();
+    }
+
+    // 渲染加载中的状态
+    this.renderLoading(() => {
+      this.attempt++;
+
+      // 在图片beforeLoad阶段做自定义的事情
+      this.options.adapter["beforeLoad"] &&
+        this.options.adapter["beforeLoad"](this, this.options);
+
+      // 性能测试-loadStart
+      this.record("loadStart");
+
+      loadImageAsync(
+        {
+          src: this.src,
+          cors: this.cors,
+        },
+        (data) => {
+          this.naturalHeight = data.naturalHeight;
+          this.naturalWidth = data.naturalWidth;
+          this.state.loaded = true; // 图片的loaded状态更改为true
+          this.state.error = false; // 图片的error状态更改为false
+          this.record("loadEnd"); // 性能测试-loadEnd
+          this.render("loaded", false);
+          this.state.rendered = true; // 图片的rendered状态更改为true
+          this._imageCache.add(this.src); // 将图片url缓存
+          onFinish();
+        },
+        (err) => {
+          // 图片加载出错
+          !this.options.silent && console.error(err);
+          this.state.error = true; // 图片的error状态更改为true
+          this.state.loaded = false; // 图片的loaded状态更改为false
+          this.render("error", false);
+        }
+      );
+    });
+  }
+
+  /*
+   * 渲染图片
+   * render image
+   * @param  {String} state to render // ['loading', 'src', 'error']
+   * @param  {String} is form cache
+   * @return
+   */
+  render(state, cache) {
+    this.elRenderer(this, state, cache);
+  }
+
+  /*
+   * 性能测试
+   * output performance data
+   * @return {Object} performance data
+   */
+  performance() {
+    let state = "loading";
+    let time = 0;
+
+    if (this.state.loaded) {
+      state = "loaded";
+      time =
+        (this.performanceData.loadEnd - this.performanceData.loadStart) / 1000;
+    }
+
+    if (this.state.error) state = "error";
+
+    return {
+      src: this.src,
+      state,
+      time,
+    };
+  }
+
+  /*
+   * 销毁
+   * $destroy
+   * @return
+   */
+  $destroy() {
+    this.el = null;
+    this.src = null;
+    this.error = null;
+    this.loading = null;
+    this.bindType = null;
+    this.attempt = 0;
+  }
+}
+```
 ## lazy-component
 
 ## lazy-container
 
 ## lazy-image
+
+## util
+
+`util.js`工具函数库，包括如下工具函数：
+
+- ImageCache：定义ImageCache类用来存储图片，包括has，add，free方法
+- inBrowser：判断window是否存在
+- CustomEvent：自定义事件对象CustomEvent
+- remove：删除数组中的指定元素
+- some：判断数组中是否存在某个函数
+- find：查询数组中的某个函数
+- assign：深度合并对象，使用`assign-deep`
+- noop：空函数
+- ArrayFrom： 将类数组转化数组
+- _：添加自定义事件，移除自定义事件
+- isObject：是否是对象
+- throttle：节流函数
+- supportWebp：是否支持Webp
+- getDPR：获取独立像素比/分辨率，devicePixelRatio
+- scrollParent： 返回window对象
+- loadImageAsync：异步加载图片
+- getBestSelectionFromSrcset：根据独立像素比，设置不同的图片
+- ObjectKeys：获取对象的keys
