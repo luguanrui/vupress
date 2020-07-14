@@ -1,6 +1,6 @@
 # vue-lazyload源码阅读
 
-## 为什么要阅读vue-lazyload
+## 为什么要读源码
 
 在开发项目过程中，经常会遇到一个问题，当一个页面中需要加载大量的图片，如果一次性加载完，会浪费网络资源不说，而且页面加载也会很慢，用户体验非常的不好。因此，需要图片懒加载这种技术手段来处理这个问题，然而平时项目都比较赶，最快的方式就去找一个插件来使用。而我选择了[vue-lazyload](https://github.com/hilongjw/vue-lazyload)这款插件，主要原因是在github上star相对来说比较多。
 
@@ -116,7 +116,7 @@ Vue.component('my-component-name', ComponentA)
 - 事件监听
 - [IntersectionObserver](https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver)
 
-## 如何调试vue-lazyload的源码
+## 如何调试
 
 1. 首先到`github`上将[vue-lazyload](https://github.com/hilongjw/vue-lazyload)源码clone下来
 2. 创建一个vue项目,这里我使用[vue-cli](https://cli.vuejs.org/)脚手架创建
@@ -743,11 +743,291 @@ export default class ReactiveListener {
   }
 }
 ```
-## lazy-component
 
 ## lazy-container
 
+全局指令`v-lazy-container`，定义：
+
+```js
+Vue.directive('lazy-container', {
+  bind: lazyContainer.bind.bind(lazyContainer),
+  componentUpdated: lazyContainer.update.bind(lazyContainer),
+  unbind: lazyContainer.unbind.bind(lazyContainer)
+})
+```
+
+`lazy-container.js`源码：
+```js
+import {
+  find,
+  remove,
+  assign,
+  ArrayFrom
+} from './util'
+
+// 定义一个 LazyContainerMananger类
+export default class LazyContainerMananger {
+  // 接受实例化之后的lazy类
+  constructor ({ lazy }) {
+    this.lazy = lazy
+    lazy.lazyContainerMananger = this
+    // 定义队列
+    this._queue = []
+  }
+  // 指令第一绑定时
+  bind (el, binding, vnode) {
+    // 实例化 LazyContainer
+    const container = new LazyContainer({ el, binding, vnode, lazy: this.lazy })
+    // 将实例化之后的LazyContainer存储到队列_queue中
+    this._queue.push(container)
+  }
+
+  // 虚拟dom更新时，查询到队列 _queue 中需要更新的 container，调用update方法
+  update (el, binding, vnode) {
+    const container = find(this._queue, item => item.el === el)
+    if (!container) return
+    container.update({ el, binding, vnode })
+  }
+
+  // 查询队列中需要解绑的 container，调用clear方法，然后在将该container从队列中移除
+  unbind (el, binding, vnode) {
+    const container = find(this._queue, item => item.el === el)
+    if (!container) return
+    container.clear()
+    remove(this._queue, container)
+  }
+}
+
+// 默认选择img标签
+const defaultOptions = {
+  selector: 'img'
+}
+// 定义 LazyContainer类
+class LazyContainer {
+  constructor ({ el, binding, vnode, lazy }) {
+    this.el = null // 默认 el为 null
+    this.vnode = vnode // 获取指令钩子函数的参数 虚拟DOM
+    this.binding = binding // 获取指令钩子函数的参数 binding
+    this.options = {} // 定义参数
+    this.lazy = lazy // 获取实例化的lazy类
+
+    this._queue = [] // 定义队列
+    this.update({ el, binding }) // 更新
+  }
+
+  update ({ el, binding }) {
+    this.el = el
+    // 合并参数 defaultOptions，binding.value 
+    this.options = assign({}, defaultOptions, binding.value)
+
+    // 获取img DOM对象的集合
+    const imgs = this.getImgs()
+    // 遍历imgDOM对象的集合
+    imgs.forEach(el => {
+      // 调用lazy类的add()方法，传入参数el、合并 this.binding与自定义的value、虚拟DOM
+      this.lazy.add(el, assign({}, this.binding, {
+        value: {
+          // 需要设置 data-src为 img的url
+          src: 'dataset' in el ? el.dataset.src : el.getAttribute('data-src'),
+          // 使用data-error属性为每个元素设置error图片，获取使用全局的 error 参数
+          error: ('dataset' in el ? el.dataset.error : el.getAttribute('data-error')) || this.options.error,
+          // 使用data-loading属性为每个元素设置loading图片，获取使用全局的 loading 参数
+          loading: ('dataset' in el ? el.dataset.loading : el.getAttribute('data-loading')) || this.options.loading
+        }
+      }), this.vnode)
+    })
+  }
+
+  // 将选择器获得的 全部img DOM对象类数组 转化为 数组
+  getImgs () {
+    return ArrayFrom(this.el.querySelectorAll(this.options.selector))
+  }
+
+  // 清除
+  clear () {
+    const imgs = this.getImgs()
+    // 调用lazy的remove方法清除
+    imgs.forEach(el => this.lazy.remove(el))
+
+    this.vnode = null
+    this.binding = null
+    this.lazy = null
+  }
+}
+
+```
+
+## lazy-component
+
+全局组件`lazy-component`
+
+`lazy-component.js`源码：
+
+```js
+import { inBrowser } from './util'
+
+export default (lazy) => {
+  return {
+    props: {
+      tag: {
+        type: String,
+        default: 'div'
+      }
+    },
+    render (h) {
+      return h(this.tag, null, this.show ? this.$slots.default : null)
+    },
+    data () {
+      return {
+        el: null,
+        state: {
+          loaded: false
+        },
+        rect: {},
+        show: false
+      }
+    },
+    mounted () {
+      this.el = this.$el // 获取当前dom对象
+      lazy.addLazyBox(this) // 将 vm 添加到 ListenerQueue 中，添加事件
+      lazy.lazyLoadHandler() // 执行懒加载
+    },
+    beforeDestroy () {
+      // 将该 vm 从队列 ListenerQueue 中移除，移除事件
+      lazy.removeComponent(this)
+    },
+    methods: {
+      getRect () {
+        this.rect = this.$el.getBoundingClientRect()
+      },
+      checkInView () {
+        this.getRect()
+        return inBrowser &&
+                    (this.rect.top < window.innerHeight * lazy.options.preLoad && this.rect.bottom > 0) &&
+                    (this.rect.left < window.innerWidth * lazy.options.preLoad && this.rect.right > 0)
+      },
+      load () {
+        this.show = true
+        this.state.loaded = true
+        // 提供事件 show
+        this.$emit('show', this)
+      },
+      destroy () {
+        return this.$destroy
+      }
+    }
+  }
+}
+
+```
+
 ## lazy-image
+
+全局组件`lazy-image`
+
+`lazy-image.js`源码：
+
+```js
+import {
+  inBrowser,
+  loadImageAsync,
+  noop
+} from './util'
+
+export default (lazyManager) => {
+  return {
+    props: {
+      src: [String, Object],
+      tag: {
+        type: String,
+        default: 'img'
+      }
+    },
+    render (h) {
+      return h(this.tag, {
+        attrs: {
+          src: this.renderSrc
+        }
+      }, this.$slots.default)
+    },
+    data () {
+      return {
+        el: null,
+        options: {
+          src: '',
+          error: '',
+          loading: '',
+          attempt: lazyManager.options.attempt
+        },
+        state: {
+          loaded: false,
+          error: false,
+          attempt: 0
+        },
+        rect: {},
+        renderSrc: ''
+      }
+    },
+    watch: {
+      src () {
+        this.init()
+        lazyManager.addLazyBox(this) // 将 vm 添加到 ListenerQueue 中，添加事件
+        lazyManager.lazyLoadHandler()// 执行懒加载
+      }
+    },
+    created () {
+      this.init()
+      this.renderSrc = this.options.loading
+    },
+    mounted () {
+      this.el = this.$el
+      lazyManager.addLazyBox(this) // 将 vm 添加到 ListenerQueue 中，添加事件
+      lazyManager.lazyLoadHandler()// 执行懒加载
+    },
+    beforeDestroy () {
+      // 将该 vm 从队列 ListenerQueue 中移除，移除事件
+      lazyManager.removeComponent(this)
+    },
+    methods: {
+      // 初始化
+      init () {
+        const { src, loading, error } = lazyManager._valueFormatter(this.src)
+        this.state.loaded = false
+        this.options.src = src
+        this.options.error = error
+        this.options.loading = loading
+        this.renderSrc = this.options.loading
+      },
+      getRect () {
+        this.rect = this.$el.getBoundingClientRect()
+      },
+      checkInView () {
+        this.getRect()
+        return inBrowser &&
+                    (this.rect.top < window.innerHeight * lazyManager.options.preLoad && this.rect.bottom > 0) &&
+                    (this.rect.left < window.innerWidth * lazyManager.options.preLoad && this.rect.right > 0)
+      },
+      load (onFinish = noop) {
+        if ((this.state.attempt > this.options.attempt - 1) && this.state.error) {
+          if (!lazyManager.options.silent) console.log(`VueLazyload log: ${this.options.src} tried too more than ${this.options.attempt} times`)
+          onFinish()
+          return
+        }
+        const src = this.options.src
+        loadImageAsync({ src }, ({ src }) => {
+          this.renderSrc = src
+          this.state.loaded = true
+        }, e => {
+          this.state.attempt++
+          this.renderSrc = this.options.error
+          this.state.error = true
+        })
+      }
+    }
+  }
+}
+
+```
 
 ## util
 
