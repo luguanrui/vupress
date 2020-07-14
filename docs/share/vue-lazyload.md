@@ -123,27 +123,22 @@ Vue.component('my-component-name', ComponentA)
 
 ```bash
 vue create lazy
-
 cd lazy
-
 yarn serve
 ```
 
 3. 将`vue-lazyload`源码中的`src`目录copy到自己的项目中，并`src`目录改名为`vue-lazyload`(可以自己随便定义)
-4. 在`main.js`文件中引入该项目
+4. 在`main.js`文件中引入
 
 ```js
 import Vue from 'vue'
 import App from './App.vue'
 import Lazyload from './vue-lazyload'
-
 Vue.config.productionTip = false
-
 Vue.use(Lazyload, { 
   preLoad: 1.3, 
   attempt: 2 ,
 })
-
 new Vue({
   render: (h) => h(App),
 }).$mount('#app')
@@ -153,7 +148,7 @@ new Vue({
 由于`vue-lazyload`项目中引入插件`assign-deep`,所以我们需要手动去安装这个插件, 执行命令`yarn install assign-deep`即可
 :::
 
-5. 以上步骤完成之后，我们就可以在自己的项目随便的调试源码了，是不是so easy
+5. 以上步骤完成之后，我们就可以在自己的项目随便的调试源码了
 
 ## 项目目录
 
@@ -167,6 +162,16 @@ new Vue({
 │   ├── listener.js
 │   └── util.js
 ```
+
+目录解读：
+
+- index.js：入口文件
+- lazy-component.js：懒加载组件
+- lazy-container.js：懒加载容器
+- lazy-image.js：懒加载图片
+- lazy.js：懒加载类
+- listener.js：监听类
+- util.js：工具函数
 
 ## index
 
