@@ -859,7 +859,7 @@ class LazyContainer {
 
 ## lazy-component
 
-全局组件`lazy-component`
+全局函数组件`lazy-component`，为了要将`lazy`作为参数传递
 
 `lazy-component.js`源码：
 
@@ -923,7 +923,7 @@ export default (lazy) => {
 
 ## lazy-image
 
-全局组件`lazy-image`
+全局函数组件`lazy-image`，定义为函数组件的目的与`lazy-component`一样，都是为了将`lazy`作为参数传递
 
 `lazy-image.js`源码：
 
