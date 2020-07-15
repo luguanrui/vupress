@@ -113,8 +113,57 @@ Vue.component('my-component-name', ComponentA)
 
 如何判断图片是否出现在视口中：
 
-- 事件监听
-- [IntersectionObserver](https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver)
+- 通过监听`scroll`事件，调用目标元素的`getBoundingClientRect()`方法，得到它相对于视口的坐标，在判断是否在视口中
+
+```js
+checkInView() {
+  const rect = document.getElementById('element').getBoundingClientRect()
+  const yInView = rect.top < window.innerHeight && rect.bottom > 0
+  const xInView = rect.left < window.innerWidth && rect.right > 0
+  return yInView && xInView
+},
+```
+
+- 交叉观察器 [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
+
+```js
+createObserver() {
+  // 1. 定义参数
+  const options = {
+    root: null, // 容器元素,默认是 null,即document
+    rootMargin: '0px', // 围绕根的边距
+    threshold: 0, // 阈值，数组或者数字，表示在目标元素在视口中出现的百分比是多少时，再去触发回调函数
+  }
+  /**
+    * 2. 定义会调用回调函数，目标元素与容器元素相交时会调用该回调函数
+    * @param {*} entries IntersectionObserverEntry的集合
+    * @param {*} observer IntersectionObserver的实例
+    */
+  const callback = (entries, observer) => {
+    console.log(entries, 'entries')
+    entries.forEach((entry) => {
+      // 调用observe方法的时，会触发一次回调函数，因此需要判断是否交叉
+      if (entry.isIntersecting) {
+        // entry.target 被观察的DOM元素
+        // observe === observer
+        // observe.unobserve(document.getElementById('element'))
+      }
+    })
+    // console.log(observe === observer)
+  }
+  /**
+    * 3. 创建观察器实例，异步观察目标元素与容器元素相交的变化
+    * @param {*} callback 目标元素的可见性变化时,调用的回调函数
+    * @param {*} options 参数
+    */
+  const observe = new IntersectionObserver(callback, options)
+
+  // 4. 指定 DOM节点 开始观察
+  observe.observe(document.getElementById('element'))
+  // 取消指定 DOM节点 的观察
+  // observe.unobserve(document.getElementById('element'))
+},
+```
 
 ## 如何调试
 
