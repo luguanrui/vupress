@@ -8,15 +8,15 @@
 
 ## 预备知识
 
-1. 打包工具[rollupjs](https://www.rollupjs.com/)
-2. [vue插件](https://cn.vuejs.org/v2/guide/plugins.html)系统
+### 1.打包工具Rollupjs
 
-使用插件：
-```js
-Vue.use(MyPlugin, { someOption: true })
-```
+::: tip 链接
+[Rollupjs](https://www.rollupjs.com/)的使用
+:::
 
-开发插件：
+### 2.Vue插件
+
+自定义全局插件：
 
 ```js
 MyPlugin.install = function (Vue, options) {
@@ -46,6 +46,8 @@ MyPlugin.install = function (Vue, options) {
   Vue.component('', function() {})
 }
 ```
+
+::: details 指令钩子函数的参数
 指令钩子函数的四个参数`el`，`binding`，`vnode`，`oldVnode`说明如下：
 
 - el：指令所绑定的DOM元素
@@ -58,8 +60,18 @@ MyPlugin.install = function (Vue, options) {
     - modifiers：一个包含修饰符的对象。例如 `v-my-directive.foo.bar` 中，修饰符对象为 `{ foo: true, bar: true }`
 - vnode：Vue 编译生成的虚拟节点
 - oldVnode：上一个虚拟节点，仅在 update 和 componentUpdated 钩子中可用
+:::
+  
+注册自定义全局插件：
+```js
+Vue.use(MyPlugin, { someOption: true })
+```
 
-3. [vue自定义指令](https://cn.vuejs.org/v2/guide/custom-directive.html)
+::: tip 提示
+详情可查阅官方文档[Vue插件系统](https://cn.vuejs.org/v2/guide/plugins.html)
+:::
+
+### 3.Vue指令
 
 注册全局指令`v-focus`：
 ```js
@@ -90,7 +102,11 @@ directives: {
 <input v-focus>
 ```
 
-4. 全局组件注册
+::: tip 提示
+详情可查阅官方文档[Vue自定义指令](https://cn.vuejs.org/v2/guide/custom-directive.html)
+:::
+
+### 4.全局组件
 
 ```js
 Vue.component('my-component-name', {
@@ -103,11 +119,11 @@ import ComponentA from '@/components/ComponentA'
 Vue.component('my-component-name', ComponentA)
 ```
   
-5. 图片懒加载的原理
+### 5.图片懒加载的原理
    
 一句话概括：当图片出现在视口中时，再去加载图片
 
-具体实现步骤：
+实现步骤：
 - 将图片的`url`存放到`data-src`中
 - 当图片出现在视口中时，再将`data-src`的值赋给`src`
 
@@ -165,10 +181,10 @@ createObserver() {
 },
 ```
 
-## 如何调试
+## 如何调试源码
 
-1. 首先到`github`上将[vue-lazyload](https://github.com/hilongjw/vue-lazyload)源码clone下来
-2. 创建一个vue项目,这里我使用[vue-cli](https://cli.vuejs.org/)脚手架创建
+1. 首先从`github`上将[vue-lazyload](https://github.com/hilongjw/vue-lazyload)源码`clone`下来
+2. 创建一个`Vue`项目,这里我使用[Vue CLI](https://cli.vuejs.org/)脚手架创建
 
 ```bash
 vue create lazy
@@ -177,7 +193,7 @@ yarn serve
 ```
 
 3. 将`vue-lazyload`源码中的`src`目录copy到自己的项目中，并`src`目录改名为`vue-lazyload`(可以自己随便定义)
-4. 在`main.js`文件中引入
+4. `main.js`文件
 
 ```js
 import Vue from 'vue'
@@ -193,11 +209,11 @@ new Vue({
 }).$mount('#app')
 
 ```
-::: warning
-由于`vue-lazyload`项目中引入插件`assign-deep`,所以我们需要手动去安装这个插件, 执行命令`yarn install assign-deep`即可
+::: warning 警告
+由于`vue-lazyload`项目中引入插件`assign-deep`,所以需要手动去安装这个插件, 执行命令`yarn install assign-deep`即可
 :::
 
-5. 以上步骤完成之后，我们就可以在自己的项目随便的调试源码了
+5. 以上步骤完成之后，就可以在自己的项目随便的调试源码了
 
 ## 项目目录
 
@@ -222,11 +238,11 @@ new Vue({
 - listener.js：监听类
 - util.js：工具函数
 
-## index
+## 入口文件index
 
-首先，我们当然是从入口文件`index.js`开始下手, 其中包含了一些`vue1.0`版本相关的兼容性代码，`vue3.0`即将在8月份来临，还有人在用`vue1.0`？因此，我们注释掉`vue1.0`相关的兼容性代码，代码也会显得更加的简单明了。
+首先从入口文件`index.js`开始下手, 其中包含了一些`vue1.0`版本相关的兼容性代码，`vue3.0`即将在8月份来临，还有人在用`vue1.0`？因此，注释掉`vue1.0`相关的兼容性代码，代码结构也会显得更加的简单明了。
 
-源码及逐行解析如下：
+源码解析如下：
 ```js
 import Lazy from './lazy'
 import LazyComponent from './lazy-component'
@@ -288,16 +304,15 @@ export default {
 由上面的分析，可以看出来，入口文件做了如下几件事：
 
 - 提供了注册插件的入口`install`
-- 注册 `lazy-component`, `lazy-image` 全局组件
-- 注册 `v-lazy`, `v-lazy-container` 全局指令
+- 在注册插件的同时，也注册 `lazy-component`, `lazy-image` 全局组件
+- 在注册插件的同时，也注册 `v-lazy`, `v-lazy-container` 全局指令
 
 使用如下的方式来使用自定义指令：
 
 注册插件：
 ```js
-import VueLazyload from 'vue-lazyload'
-
-Vue.use(Lazyload, { /* 自定义参数 */ })
+import VueLazyload from 'vue-lazyload' // 引入插件
+Vue.use(Lazyload, { /* 自定义参数 */ })  // 注册插件
 ```
 
 使用指令：
@@ -305,17 +320,11 @@ Vue.use(Lazyload, { /* 自定义参数 */ })
 <img v-lazy="img.src" />
 ```
 
-当我们使用`v-lazy`指令的时候，首先会触发定义的钩子函数`bind`，也就是`lazy.add`方法，而这个方法是定义在`Lazy`类当中的，因此接下来，我们来分析下`Lazy`类的实现
+当我们使用`v-lazy`指令的时候，首先会触发定义的钩子函数`bind`，也就是`lazy.add`方法，而这个方法是定义在`Lazy`类当中的，因此接下来，分析下`Lazy`类的实现
 
-## lazy
+## Lazy类
 
-当指令第一次绑定到元素时，会调用`lazy.add`的方法，先看下`add`方法的大致实现方式：
-
-![](./vue-lazyload/add.png)
-
-可以看出，插件内部维护了一个监听队列`ListenerQueue`，来存储图片，通过遍历这个监听队列，最终实现图片的懒加载
-
-为了有一个全局观，我们先看下代码结构，再去具体分析：
+为了有一个全局观，先看下`Lazy`类的大致结构,如下所示简化后的源码：
 
 ```js
 import { /* 一系列的工具方法 */} from "./util";
@@ -360,7 +369,13 @@ export default function(Vue) {
 
 ```
 
-`adds()`的实现：
+当指令第一次绑定到元素时，会调用`lazy.add`的方法，`add()`方法实现的大致流程：
+
+![](./vue-lazyload/add.png)
+
+可以看出，插件内部维护了一个监听队列`ListenerQueue`，来存储`listener`对象，通过遍历监听队列`ListenerQueue`，最终实现每张图片的懒加载
+
+`adds()`方法的源码：
 
 ```js
 add(el, binding, vnode) {
@@ -436,7 +451,7 @@ add(el, binding, vnode) {
 有必要在`Vue.nextTick`中再次去调用一次`Vue.nextTick(() => this.lazyLoadHandler());`？？？
 :::
 
-`update()`方法的流程：
+当虚拟dom更新时，会调用`lazy.update`方法，`update()`方法的实现的大致流程：
 
 ![](./vue-lazyload/update.png)
 
@@ -470,11 +485,10 @@ update(el, binding, vnode) {
 ```
 
 ::: warning 疑问
-在指令钩子函数`componentUpdated`已经调用了一次`lazyLoadHandler`，是否又不要再次调用一次`Vue.nextTick(() => this.lazyLoadHandler());`？？？
+在指令钩子函数`componentUpdated`已经调用了一次`lazyLoadHandler`，是否有必要再次调用一次`Vue.nextTick(() => this.lazyLoadHandler());`？？？
 :::
 
-
-`remove()`方法的流程图：
+当指令与元素解绑时，调用`lazy.remove`方法，`remove()`方法的大致实现流程图：
 
 ![](./vue-lazyload/remove.png)
 
@@ -500,7 +514,7 @@ remove(el) {
 }
 ```
 
-## listener
+## ReactiveListener类
 
 主要是维护`ReactiveListener`类
 
@@ -798,7 +812,7 @@ export default class ReactiveListener {
 }
 ```
 
-## lazy-container
+## LazyContainer类
 
 全局指令`v-lazy-container`，定义：
 
@@ -811,6 +825,7 @@ Vue.directive('lazy-container', {
 ```
 
 `lazy-container.js`源码：
+
 ```js
 import {
   find,
@@ -911,7 +926,7 @@ class LazyContainer {
 
 ```
 
-## lazy-component
+## lazy-component组件
 
 全局函数组件`lazy-component`，为了要将`lazy`作为参数传递
 
@@ -975,7 +990,7 @@ export default (lazy) => {
 
 ```
 
-## lazy-image
+## lazy-image组件
 
 全局函数组件`lazy-image`，定义为函数组件的目的与`lazy-component`一样，都是为了将`lazy`作为参数传递
 
@@ -1083,7 +1098,7 @@ export default (lazyManager) => {
 
 ```
 
-## util
+## util工具函数
 
 `util.js`工具函数库，包括如下工具函数：
 
