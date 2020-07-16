@@ -1,5 +1,6 @@
 # 目录
 
+- [vue-lazyload源码阅读](./vue-lazyload.md)
 - [获取某年某个月的最后一天](./date.md)
 - [动态表格](./dynamic-table.md)
 - [自动部署](./auto-deploy.md)

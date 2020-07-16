@@ -2,9 +2,19 @@
 
 ## 为什么要读源码
 
+1. 项目中使用过，但是不是很明白它是怎么实现的
+
 在开发项目过程中，经常会遇到一个问题，当一个页面中需要加载大量的图片，如果一次性加载完，会浪费网络资源不说，而且页面加载也会很慢，用户体验非常的不好。因此，需要图片懒加载这种技术手段来处理这个问题，然而平时项目都比较赶，最快的方式就去找一个插件来使用。而我选择了[vue-lazyload](https://github.com/hilongjw/vue-lazyload)这款插件，主要原因是在github上star相对来说比较多。
 
-为了不做一个拿来主义者，利用业余时间读下源码，给自己充充电
+2. 为了不做一个拿来主义者，利用业余时间读下源码，给自己充充电
+
+## 能够获得什么
+
+- 自定义插件的实现
+- 自定义组件的实现
+- 自定义指令的实现
+- 如何实现一个自己的插件
+- 思想与思想的碰撞
 
 ## 预备知识
 
@@ -238,6 +248,10 @@ new Vue({
 - listener.js：监听类
 - util.js：工具函数
 
+## 概要
+
+`vue-lazyload`是通过将每张图片组装成一个`listener`，然后存放到`ListenerQueue`中，通过遍历这个队列，监听判断图片是否出现在容器元素中，再执行懒加载。它判断图片是否出现在容器元素中有两种方式，一种是通过监听事件，判断图片是否出现在容器元素中，如果是则执行懒加载，另外一种是通过交叉监听来判断图片是否出现在容器元素中，如果是则执行懒加载。
+
 ## 入口文件index
 
 首先从入口文件`index.js`开始下手, 其中包含了一些`vue1.0`版本相关的兼容性代码，`vue3.0`即将在8月份来临，还有人在用`vue1.0`？因此，注释掉`vue1.0`相关的兼容性代码，代码结构也会显得更加的简单明了。
@@ -301,11 +315,11 @@ export default {
 }
 ```
 
-由上面的分析，可以看出来，入口文件做了如下几件事：
+从上面的分析，可以看出来，入口文件做了如下几件事：
 
 - 提供了注册插件的入口`install`
-- 在注册插件的同时，也注册 `lazy-component`, `lazy-image` 全局组件
-- 在注册插件的同时，也注册 `v-lazy`, `v-lazy-container` 全局指令
+- 在注册插件的同时，注册了 `lazy-component`, `lazy-image` 全局组件
+- 在注册插件的同时，注册了 `v-lazy`, `v-lazy-container` 全局指令
 
 使用如下的方式来使用自定义指令：
 
@@ -324,10 +338,10 @@ Vue.use(Lazyload, { /* 自定义参数 */ })  // 注册插件
 
 ## Lazy类
 
-为了有一个全局观，先看下`Lazy`类的大致结构,如下所示简化后的源码：
+`Lazy`的代码较多，为了有一个全局观，先看下`Lazy`类的大致结构,如下所示简化后的源码：
 
 ```js
-import { /* 一系列的工具方法 */} from "./util";
+import { /* 一系列的工具方法，下面会介绍到 */} from "./util";
 import ReactiveListener from "./listener";
 export default function(Vue) {
   return class Lazy {
@@ -339,7 +353,7 @@ export default function(Vue) {
         silent: silent, 
         dispatchEvent: !!dispatchEvent,
         throttleWait: throttleWait || 200, 
-        // ...还有很多的属性
+        // ...还有很多的参数属性
       };
       this._initEvent();
       this._imageCache = new ImageCache({ max: 200 });
