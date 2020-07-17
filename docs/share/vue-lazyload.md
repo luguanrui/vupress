@@ -137,6 +137,22 @@ Vue.component('my-component-name', ComponentA)
 - 将图片的`url`存放到`data-src`中
 - 当图片出现在视口中时，再将`data-src`的值赋给`src`
 
+```js
+preloadImg() {
+  const imgList = document.querySelectorAll('img')
+  imgList.forEach((item) => {
+    let img = new Image()
+    img.src = item.dataset.src
+    img.onload = () => {
+      item.src = img.src
+    }
+    img.onerror = () => {
+      item.src = './error.jpg'
+    }
+  })
+}
+```
+
 如何判断图片是否出现在视口中：
 
 - 通过监听`scroll`事件，调用目标元素的`getBoundingClientRect()`方法，得到它相对于视口的坐标，在判断是否在视口中
