@@ -8,7 +8,7 @@ module.exports = {
   themeConfig: {
     displayAllHeaders: true,
     lastUpdated: "上次更新",
-    sidebarDepth: 1,
+    sidebarDepth: 3, // 1
     nav: [
       {
         text: "首页",

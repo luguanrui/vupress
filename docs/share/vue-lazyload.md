@@ -8,14 +8,6 @@
 
 2. 为了不做一个拿来主义者，利用业余时间读下源码，给自己充充电
 
-## 能够获得什么
-
-- 自定义插件的实现
-- 自定义组件的实现
-- 自定义指令的实现
-- 如何实现一个自己的插件
-- 思想与思想的碰撞
-
 ## 预备知识
 
 ### 1.打包工具Rollupjs
@@ -131,23 +123,33 @@ Vue.component('my-component-name', ComponentA)
   
 ### 5.图片懒加载的原理
    
-一句话概括：当图片出现在视口中时，再去加载图片
+懒加载的应用场景：
+
+- 当图片出现在容器元素中时，再加载图片
 
 实现步骤：
-- 将图片的`url`存放到`data-src`中
-- 当图片出现在视口中时，再将`data-src`的值赋给`src`
+1. 将图片的`url`存放到`data-src`中
+2. 当图片出现在视口中时，再将`data-src`的值赋给`src`
 
 ```js
 preloadImg() {
+  // 获取img dom的集合 imgList
   const imgList = document.querySelectorAll('img')
-  imgList.forEach((item) => {
+  // 遍历 imgList
+  imgList.forEach(el => {
+    // 实例化Image对象
     let img = new Image()
+    // 将 data-src 中的值赋值给 img 的 src，此时会加载图片
     img.src = item.dataset.src
+    // 图片加载完成
     img.onload = () => {
-      item.src = img.src
+      // 将 img.src 设置给对应的 el src
+      el.setAttribute("src", img.src);
     }
+    // 图片加载失败
     img.onerror = () => {
-      item.src = './error.jpg'
+      // 设置 error 图片
+      el.setAttribute("src", './error.jpg');
     }
   })
 }
@@ -264,9 +266,9 @@ new Vue({
 - listener.js：监听类
 - util.js：工具函数
 
-## 概要
+<!-- ## 概要
 
-`vue-lazyload`是通过将每张图片组装成一个`listener`，然后存放到`ListenerQueue`中，通过遍历这个队列，监听判断图片是否出现在容器元素中，再执行懒加载。它判断图片是否出现在容器元素中有两种方式，一种是通过监听事件，判断图片是否出现在容器元素中，如果是则执行懒加载，另外一种是通过交叉监听来判断图片是否出现在容器元素中，如果是则执行懒加载。
+`vue-lazyload`是通过将每张图片组装成一个`listener`，然后存放到`ListenerQueue`中，通过遍历这个队列，监听判断图片是否出现在容器元素中，再执行懒加载。它判断图片是否出现在容器元素中有两种方式，一种是通过监听事件，判断图片是否出现在容器元素中，如果是则执行懒加载，另外一种是通过交叉监听来判断图片是否出现在容器元素中，如果是则执行懒加载。 -->
 
 ## 入口文件index
 
@@ -353,6 +355,18 @@ Vue.use(Lazyload, { /* 自定义参数 */ })  // 注册插件
 当我们使用`v-lazy`指令的时候，首先会触发定义的钩子函数`bind`，也就是`lazy.add`方法，而这个方法是定义在`Lazy`类当中的，因此接下来，分析下`Lazy`类的实现
 
 ## Lazy类
+
+功能：当图片出现在视口中时，再去加载图片
+
+使用的方式：
+
+```vue
+<ul>
+  <li v-for="img in list">
+    <img v-lazy="img.src" >
+  </li>
+</ul>
+```
 
 `Lazy`的代码较多，为了有一个全局观，先看下`Lazy`类的大致结构,如下所示简化后的源码：
 
@@ -854,6 +868,26 @@ Vue.directive('lazy-container', {
 })
 ```
 
+功能：当图片出现在视口中时，再去加载图片
+
+使用的方式：
+
+```vue
+<div v-lazy-container="{ selector: 'img', error: 'xxx.jpg', loading: 'xxx.jpg' }">
+  <img data-src="//domain.com/img1.jpg">
+  <img data-src="//domain.com/img2.jpg">
+  <img data-src="//domain.com/img3.jpg">  
+</div>
+
+或者
+
+<div v-lazy-container="{ selector: 'img' }">
+  <img data-src="//domain.com/img1.jpg" data-error="xxx.jpg">
+  <img data-src="//domain.com/img2.jpg" data-loading="xxx.jpg">
+  <img data-src="//domain.com/img3.jpg">  
+</div>
+```
+
 `lazy-container.js`源码：
 
 ```js
@@ -958,7 +992,7 @@ class LazyContainer {
 
 ## lazy-component组件
 
-全局函数组件`lazy-component`，为了要将`lazy`作为参数传递
+全局组件`lazy-component`，该组件是一个`函数组件`，是为了要将`lazy`作为参数传递
 
 `lazy-component.js`源码：
 
@@ -974,6 +1008,7 @@ export default (lazy) => {
       }
     },
     render (h) {
+      // 使用插槽 this.$slots.default
       return h(this.tag, null, this.show ? this.$slots.default : null)
     },
     data () {
@@ -989,13 +1024,15 @@ export default (lazy) => {
     mounted () {
       this.el = this.$el // 获取当前dom对象
       lazy.addLazyBox(this) // 将 vm 添加到 ListenerQueue 中，添加事件
-      lazy.lazyLoadHandler() // 执行懒加载
+      // 执行懒加载，此时this指向当前组件，会调用组件中定义的getRect，checkInView，load，destroy方法
+      lazy.lazyLoadHandler() 
     },
     beforeDestroy () {
       // 将该 vm 从队列 ListenerQueue 中移除，移除事件
       lazy.removeComponent(this)
     },
     methods: {
+      // 当前组件对象
       getRect () {
         this.rect = this.$el.getBoundingClientRect()
       },
@@ -1008,7 +1045,7 @@ export default (lazy) => {
       load () {
         this.show = true
         this.state.loaded = true
-        // 提供事件 show
+        // 提供事件 show，参数为当前组件对象
         this.$emit('show', this)
       },
       destroy () {
@@ -1017,116 +1054,15 @@ export default (lazy) => {
     }
   }
 }
-
 ```
+
+::: warning 提示
+使用该组件，如果容器中没有其他的DOM元素，rect对象的top，bottom，left，right都是0，则不会执行load方法，即不会渲染图片
+:::
 
 ## lazy-image组件
 
-全局函数组件`lazy-image`，定义为函数组件的目的与`lazy-component`一样，都是为了将`lazy`作为参数传递
-
-`lazy-image.js`源码：
-
-```js
-import {
-  inBrowser,
-  loadImageAsync,
-  noop
-} from './util'
-
-export default (lazyManager) => {
-  return {
-    props: {
-      src: [String, Object],
-      tag: {
-        type: String,
-        default: 'img'
-      }
-    },
-    render (h) {
-      return h(this.tag, {
-        attrs: {
-          src: this.renderSrc
-        }
-      }, this.$slots.default)
-    },
-    data () {
-      return {
-        el: null,
-        options: {
-          src: '',
-          error: '',
-          loading: '',
-          attempt: lazyManager.options.attempt
-        },
-        state: {
-          loaded: false,
-          error: false,
-          attempt: 0
-        },
-        rect: {},
-        renderSrc: ''
-      }
-    },
-    watch: {
-      src () {
-        this.init()
-        lazyManager.addLazyBox(this) // 将 vm 添加到 ListenerQueue 中，添加事件
-        lazyManager.lazyLoadHandler()// 执行懒加载
-      }
-    },
-    created () {
-      this.init()
-      this.renderSrc = this.options.loading
-    },
-    mounted () {
-      this.el = this.$el
-      lazyManager.addLazyBox(this) // 将 vm 添加到 ListenerQueue 中，添加事件
-      lazyManager.lazyLoadHandler()// 执行懒加载
-    },
-    beforeDestroy () {
-      // 将该 vm 从队列 ListenerQueue 中移除，移除事件
-      lazyManager.removeComponent(this)
-    },
-    methods: {
-      // 初始化
-      init () {
-        const { src, loading, error } = lazyManager._valueFormatter(this.src)
-        this.state.loaded = false
-        this.options.src = src
-        this.options.error = error
-        this.options.loading = loading
-        this.renderSrc = this.options.loading
-      },
-      getRect () {
-        this.rect = this.$el.getBoundingClientRect()
-      },
-      checkInView () {
-        this.getRect()
-        return inBrowser &&
-                    (this.rect.top < window.innerHeight * lazyManager.options.preLoad && this.rect.bottom > 0) &&
-                    (this.rect.left < window.innerWidth * lazyManager.options.preLoad && this.rect.right > 0)
-      },
-      load (onFinish = noop) {
-        if ((this.state.attempt > this.options.attempt - 1) && this.state.error) {
-          if (!lazyManager.options.silent) console.log(`VueLazyload log: ${this.options.src} tried too more than ${this.options.attempt} times`)
-          onFinish()
-          return
-        }
-        const src = this.options.src
-        loadImageAsync({ src }, ({ src }) => {
-          this.renderSrc = src
-          this.state.loaded = true
-        }, e => {
-          this.state.attempt++
-          this.renderSrc = this.options.error
-          this.state.error = true
-        })
-      }
-    }
-  }
-}
-
-```
+文档中未推荐使用，这里不做分析
 
 ## util工具函数
 
@@ -1150,3 +1086,15 @@ export default (lazyManager) => {
 - loadImageAsync：异步加载图片
 - getBestSelectionFromSrcset：根据独立像素比，设置不同的图片
 - ObjectKeys：获取对象的keys
+
+## 总结
+
+通过阅读`vue-lazyload`源码，收获如下：
+
+- `Vue`自定义插件（包括自定义组件，自定义指令）
+- 对图片懒加载的实现有了全新的认识
+
+
+`vue-lazyload`通过会维护一个`ListenerQueue`队列来实现图片的懒加载，代码执行主流程如下：
+
+![](./vue-lazyload/main.png)
