@@ -10,21 +10,19 @@
 
 ## 预备知识
 
-### 1.打包工具Rollupjs
+### 1.Rollupjs
 
-::: tip 链接
-[Rollupjs](https://www.rollupjs.com/)的使用
-:::
+[Rollupjs](https://www.rollupjs.com/)是 JavaScript 模块打包器，配置非常的简单，`Vue`源代码也是使用`Rollupjs`打包的，非常有必要玩一下
 
 ### 2.Vue插件
 
-自定义全局插件：
+自定义插件：
 
 ```js
 MyPlugin.install = function (Vue, options) {
   // 1. 添加全局方法或 property
   Vue.myGlobalMethod = function () { /* 逻辑... */ }
-  // 2. 添加全局指令
+  // 2. 添加全局指令（这里重点关注）
   Vue.directive('my-directive', {
     // 指令第一次绑定到元素时调用，做初始化设置（只调用一次）
     bind (el, binding, vnode, oldVnode) { /* 逻辑... */ }, 
@@ -44,7 +42,7 @@ MyPlugin.install = function (Vue, options) {
   })
   // 4. 添加实例方法
   Vue.prototype.$myMethod = function (methodOptions) { /* 逻辑... */ }
-  // 5. 添加全局组件
+  // 5. 添加全局组件（这里重点关注）
   Vue.component('', function() {})
 }
 ```
@@ -64,13 +62,13 @@ MyPlugin.install = function (Vue, options) {
 - oldVnode：上一个虚拟节点，仅在 update 和 componentUpdated 钩子中可用
 :::
   
-注册自定义全局插件：
+注册自定义插件并传入参数：
 ```js
 Vue.use(MyPlugin, { someOption: true })
 ```
 
 ::: tip 提示
-详情可查阅官方文档[Vue插件系统](https://cn.vuejs.org/v2/guide/plugins.html)
+官方文档入口[Vue插件系统](https://cn.vuejs.org/v2/guide/plugins.html)
 :::
 
 ### 3.Vue指令
@@ -98,38 +96,48 @@ directives: {
 }
 ```
 
-指令的使用：
+使用指令：
 
 ```vue
 <input v-focus>
 ```
 
 ::: tip 提示
-详情可查阅官方文档[Vue自定义指令](https://cn.vuejs.org/v2/guide/custom-directive.html)
+以上官方提供的demo，具体可查询官方文档[Vue自定义指令](https://cn.vuejs.org/v2/guide/custom-directive.html)
 :::
 
 ### 4.全局组件
 
-```js
-Vue.component('my-component-name', {
-  // ... 选项 ...
-})
-```
+注册全局组件：
 
 ```js
+Vue.component('component-name', {
+  props: []
+  data: function() {
+    return {}
+  },
+  methods: {},
+  template: ''
+  // options
+})
+```
+或者以`.vue`模板的形式注册
+```js
 import ComponentA from '@/components/ComponentA'
-Vue.component('my-component-name', ComponentA)
+Vue.component('component-name', ComponentA)
 ```
   
 ### 5.图片懒加载的原理
    
 懒加载的应用场景：
 
-- 当图片出现在容器元素中时，再加载图片
+- 当图片出现在视口中时，再加载图片
 
 实现步骤：
-1. 将图片的`url`存放到`data-src`中
-2. 当图片出现在视口中时，再将`data-src`的值赋给`src`
+1. 将图片的`url`存放到`data-src`自定义属性（可随便设置）中（通过`el.dataset.src`来获取该属性的值）
+2. 实例化`Image`对象来缓存图片，当图片出现在视口中时，再将`data-src`的值赋给缓存图片的`src`，从而实现图片的懒加载，最后在图片加载成功的事件中，将缓存图片的`src`设置到对应的 `img` 标签的 `src`上
+
+简单实现：
 
 ```js
 preloadImg() {
@@ -157,34 +165,42 @@ preloadImg() {
 
 如何判断图片是否出现在视口中：
 
-- 通过监听`scroll`事件，调用目标元素的`getBoundingClientRect()`方法，得到它相对于视口的坐标，在判断是否在视口中
+- 第一种方式：通过监听`scroll`等事件，调用目标元素的[getBoundingClientRect()](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect)方法，得到它相对于视口的坐标，即可判断是否出现在视口中
+
+getBoundingClientRect的图解：
+
+![](./vue-lazyload/getBoundingClientRect.png)
+
+实现：
 
 ```js
 checkInView() {
-  const rect = document.getElementById('element').getBoundingClientRect()
+  const rect = el.getBoundingClientRect()
   const yInView = rect.top < window.innerHeight && rect.bottom > 0
   const xInView = rect.left < window.innerWidth && rect.right > 0
   return yInView && xInView
 },
 ```
 
-- 交叉观察器 [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
+- 第二种方式：浏览器自带的 交叉观察器 [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) api
+
+简单实现：
 
 ```js
 createObserver() {
   // 1. 定义参数
   const options = {
-    root: null, // 容器元素,默认是 null,即document
-    rootMargin: '0px', // 围绕根的边距
+    root: null, // 视口,默认是 null,即document对象
+    rootMargin: '0px', // 围绕视口的边距
     threshold: 0, // 阈值，数组或者数字，表示在目标元素在视口中出现的百分比是多少时，再去触发回调函数
   }
   /**
-    * 2. 定义会调用回调函数，目标元素与容器元素相交时会调用该回调函数
+    * 2. 定义会调用回调函数，目标元素与视口相交时会调用该回调函数
     * @param {*} entries IntersectionObserverEntry的集合
     * @param {*} observer IntersectionObserver的实例
     */
   const callback = (entries, observer) => {
-    console.log(entries, 'entries')
+    // console.log(entries, 'entries')
     entries.forEach((entry) => {
       // 调用observe方法的时，会触发一次回调函数，因此需要判断是否交叉
       if (entry.isIntersecting) {
@@ -196,7 +212,7 @@ createObserver() {
     // console.log(observe === observer)
   }
   /**
-    * 3. 创建观察器实例，异步观察目标元素与容器元素相交的变化
+    * 3. 创建观察器实例，异步观察目标元素与视口相交的变化
     * @param {*} callback 目标元素的可见性变化时,调用的回调函数
     * @param {*} options 参数
     */
@@ -209,6 +225,8 @@ createObserver() {
 },
 ```
 
+了解完以上预备知识点，下面就可以正式的开始源码解读咯
+
 ## 如何调试源码
 
 1. 首先从`github`上将[vue-lazyload](https://github.com/hilongjw/vue-lazyload)源码`clone`下来
@@ -220,30 +238,29 @@ cd lazy
 yarn serve
 ```
 
-3. 将`vue-lazyload`源码中的`src`目录copy到自己的项目中，并`src`目录改名为`vue-lazyload`(可以自己随便定义)
-4. `main.js`文件
+3. 将`vue-lazyload`源码中的`src`目录copy到上面创建的项目中，并`src`目录改名为`vue-lazyload`(可以自己随便定义)
+4. 在`main.js`文件引入，并注册插件
 
 ```js
 import Vue from 'vue'
 import App from './App.vue'
 import Lazyload from './vue-lazyload'
 Vue.config.productionTip = false
-Vue.use(Lazyload, { 
-  preLoad: 1.3, 
-  attempt: 2 ,
-})
+Vue.use(Lazyload)
 new Vue({
   render: (h) => h(App),
 }).$mount('#app')
 
 ```
 ::: warning 警告
-由于`vue-lazyload`项目中引入插件`assign-deep`,所以需要手动去安装这个插件, 执行命令`yarn install assign-deep`即可
+由于`vue-lazyload`项目中引入插件`assign-deep`,所以需要先手动安装下这个插件, 执行命令`yarn install assign-deep`即可
 :::
 
-5. 以上步骤完成之后，就可以在自己的项目随便的调试源码了
+5. 以上步骤完成之后，就可以启动自己的项目，随便的调试源码了
 
-## 项目目录
+至此，准备工作已经完全做完，下面正式开始解读源码！
+
+## 目录结构
 
 ```bash
 ├── src
@@ -261,14 +278,14 @@ new Vue({
 - index.js：入口文件
 - lazy-component.js：懒加载组件
 - lazy-container.js：懒加载容器
-- lazy-image.js：懒加载图片
+- lazy-image.js：官方文档中尚未列出参数`lazyImage`,暂不分析
 - lazy.js：懒加载类
 - listener.js：监听类
 - util.js：工具函数
 
 <!-- ## 概要
 
-`vue-lazyload`是通过将每张图片组装成一个`listener`，然后存放到`ListenerQueue`中，通过遍历这个队列，监听判断图片是否出现在容器元素中，再执行懒加载。它判断图片是否出现在容器元素中有两种方式，一种是通过监听事件，判断图片是否出现在容器元素中，如果是则执行懒加载，另外一种是通过交叉监听来判断图片是否出现在容器元素中，如果是则执行懒加载。 -->
+`vue-lazyload`是通过将每张图片组装成一个`listener`，然后存放到`ListenerQueue`中，通过遍历这个队列，监听判断图片是否出现在视口中，再执行懒加载。它判断图片是否出现在视口中有两种方式，一种是通过监听事件，判断图片是否出现在视口中，如果是则执行懒加载，另外一种是通过交叉监听来判断图片是否出现在视口中，如果是则执行懒加载。 -->
 
 ## 入口文件index
 
@@ -279,55 +296,44 @@ new Vue({
 import Lazy from './lazy'
 import LazyComponent from './lazy-component'
 import LazyContainer from './lazy-container'
-import LazyImage from './lazy-image'
 
 export default {
-  // 插件提供install方法用于注册使用，传入两个参数`Vue`, `options`(自定义参数)
+  // 插件提供install方法用于注册，传入两个参数，分别为`Vue`, `options`(自定义参数)
   install (Vue, options = {}) {
-    // 执行`Lazy`函数，传入了唯一的参数`Vue`，并返回了`LazyClass`类
+    // 执行`Lazy`函数，传入参数`Vue`，返回`LazyClass`类
     const LazyClass = Lazy(Vue)
-    // 实例化`LazyClass`类，传入自定义参数`options`, 得到实例`lazy`,图片懒加载的重要逻辑都在这个类中实现
+    // 实例化`LazyClass`类，传入自定义参数`options`, 得到实例`lazy`
     const lazy = new LazyClass(options)
     
-    // 实例化`LazyContainer`得到实例`lazyContainer`,传入实例`{ lazy }`
+    // 实例化`LazyContainer`，并传入实例`{ lazy }`，得到实例`lazyContainer`
     const lazyContainer = new LazyContainer({ lazy })
 
     // 将实例`lazy`挂载到`Vue`的原型属性`$Lazyload`上
     Vue.prototype.$Lazyload = lazy
 
-    // 注册全局组件
+    // 注册组件
     if (options.lazyComponent) {
-      // 注册全局组件`lazy-component`
-      // 执行 LazyComponent() 传入 `lazy`实例，返回一个对象
+      // 执行 LazyComponent()，传入 `lazy`实例，返回一个Vue组件
       Vue.component('lazy-component', LazyComponent(lazy))
     }
-    if (options.lazyImage) {
-      // 注册全局组件`lazy-image`
-      // 执行 LazyImage() 传入 `lazy`实例，返回一个对象
-      Vue.component('lazy-image', LazyImage(lazy))
-    }
 
-    // 注册全局
-    // 注册全局指令`lazy`
+    // 注册全局指令`v-lazy`
     Vue.directive('lazy', {
-      // 指令第一次绑定到元素时，执行 lazy.add
+      // 指令第一次绑定到元素时，执行 lazy.add()
       bind: lazy.add.bind(lazy),
-      // 所在组件的 虚拟dom更新时，执行初始化，执行 lazy.update
+      // 所在组件的 虚拟DOM 更新时，执行初始化，执行 lazy.update()
       update: lazy.update.bind(lazy),
-      // 指令所在的虚拟dom及其子虚拟dom全部更新后，执行 lazy.lazyLoadHandler
+      // 指令所在的 虚拟DOM 及 其子虚拟DOM 全部更新后，执行 lazy.lazyLoadHandler()
       componentUpdated: lazy.lazyLoadHandler.bind(lazy), 
-      // 指令与元素解绑时, 执行 lazy.remove
+      // 指令与元素解绑时, 执行 lazy.remove()
       unbind: lazy.remove.bind(lazy) 
     })
 
-    // 注册全局指令`lazy-container`
+    // 注册全局指令`v-lazy-container`
     Vue.directive('lazy-container', {
-      // 指令第一次绑定到元素时，执行 lazyContainer.bind
-      bind: lazyContainer.bind.bind(lazyContainer),
-      // 指令所在的虚拟dom及其子虚拟dom全部更新后，执行 lazyContainer.update
-      componentUpdated: lazyContainer.update.bind(lazyContainer),
-      // 指令与元素解绑时, 执行 lazyContainer.unbind
-      unbind: lazyContainer.unbind.bind(lazyContainer)
+      bind: lazyContainer.bind.bind(lazyContainer), // lazyContainer.bind()
+      componentUpdated: lazyContainer.update.bind(lazyContainer),// lazyContainer.update
+      unbind: lazyContainer.unbind.bind(lazyContainer) // lazyContainer.unbind
     })
   }
 }
@@ -339,44 +345,29 @@ export default {
 - 在注册插件的同时，注册了 `lazy-component`, `lazy-image` 全局组件
 - 在注册插件的同时，注册了 `v-lazy`, `v-lazy-container` 全局指令
 
-使用如下的方式来使用自定义指令：
+::: warning
 
-注册插件：
-```js
-import VueLazyload from 'vue-lazyload' // 引入插件
-Vue.use(Lazyload, { /* 自定义参数 */ })  // 注册插件
-```
+1. 以上定义的钩子函数都带有一个`bind`，是为了使得函数中的`this`指向`Lazy`类或`LazyContainerMananger`类，若不绑定 `this` 会指向 `undefined`
+2. 不可以使用`call`或者`apply`，因为会立即执相应的函数
+:::
 
-使用指令：
-```vue
-<img v-lazy="img.src" />
-```
-
-当我们使用`v-lazy`指令的时候，首先会触发定义的钩子函数`bind`，也就是`lazy.add`方法，而这个方法是定义在`Lazy`类当中的，因此接下来，分析下`Lazy`类的实现
+当我们使用`v-lazy`指令的时候，也就是指令`v-lazy`第一次绑定到元素时，会触发`bind`钩子函数，也就是`lazy.add()`方法，而这个方法是定义在`Lazy`类当中的，因此接下来，分析下`Lazy`类的实现
 
 ## Lazy类
 
-功能：当图片出现在视口中时，再去加载图片
+功能：懒加载的主要功能都在这个类中实现
 
-使用的方式：
-
-```vue
-<ul>
-  <li v-for="img in list">
-    <img v-lazy="img.src" >
-  </li>
-</ul>
-```
-
-`Lazy`的代码较多，为了有一个全局观，先看下`Lazy`类的大致结构,如下所示简化后的源码：
+由于`lazy.js`文件中的代码较多，为了有一个全局观，先看下`Lazy`类的大致结构,如下所示为简化后的代码：
 
 ```js
 import { /* 一系列的工具方法，下面会介绍到 */} from "./util";
+// 监听器，这个是vue-lazyload的核心，后面在去理解
 import ReactiveListener from "./listener";
+
 export default function(Vue) {
   return class Lazy {
-    constructor({preLoad, error,throttleWait,/* ...还有很多传入的参数 */}) {
-      this.ListenerQueue = [];
+    constructor({preLoad, error,throttleWait,/* ...插件支持的用户入参 */}) {
+      this.ListenerQueue = []; // 监听队列，用来存放监听器
       this.TargetIndex = 0;
       this.TargetQueue = [];
       this.options = {
@@ -394,16 +385,16 @@ export default function(Vue) {
       this.setMode(this.options.observer ? modeType.observer : modeType.event);
     }
     addLazyBox(vm) {}
-    add(el, binding, vnode) {}
-    update(el, binding, vnode) {}
-    remove(el) {}
+    add(el, binding, vnode) {} // *****bind钩子函数
+    update(el, binding, vnode) {} // *****update钩子函数
+    remove(el) {} // *****unbind钩子函数
     removeComponent() {}
     setMode(mode) {}
     _addListenerTarget(el) {}
     _removeListenerTarget(el) {}
     _initListen(el, start) {}
     _initEvent() {}
-    _lazyLoadHandler() {}
+    _lazyLoadHandler() {} // *****componentUpdated钩子函数
     _initIntersectionObserver() {}
     _observerHandler(entries, observer) {}
     _elRenderer(listener, state, cache) {}
@@ -413,22 +404,24 @@ export default function(Vue) {
 
 ```
 
-当指令第一次绑定到元素时，会调用`lazy.add`的方法，`add()`方法实现的大致流程：
+`add()`方法实现的大致流程：
 
 ![](./vue-lazyload/add.png)
 
-可以看出，插件内部维护了一个监听队列`ListenerQueue`，来存储`listener`对象，通过遍历监听队列`ListenerQueue`，最终实现每张图片的懒加载
+可以看出，插件内部维护了一个监听队列`ListenerQueue`，来存储监听器 `listener`对象，通过遍历监听队列`ListenerQueue`，最终实现每张图片的懒加载
 
-`adds()`方法的源码：
+`add()`方法的源码：
 
 ```js
 add(el, binding, vnode) {
-  // 如果已存在则更新
+  // 通过 DOM元素 判断监听器是否已存在于监听队列中
   if (some(this.ListenerQueue, (item) => item.el === el)) {
+    // 如果已存在，则调用更新方法 update
     this.update(el, binding);
+    // 在下一次DOM更新循环之后，执行lazyLoadHandler
     return Vue.nextTick(this.lazyLoadHandler);
   }
-  // 根据binding.value，获取图片的真是src, loading, error
+  // 根据binding.value，获取图片的真实src, loading, error
   // cors获取不到，因为_valueFormatter没有返回cors
   let { src, loading, error, cors } = this._valueFormatter(binding.value);
 
@@ -1060,9 +1053,9 @@ export default (lazy) => {
 使用该组件，如果容器中没有其他的DOM元素，rect对象的top，bottom，left，right都是0，则不会执行load方法，即不会渲染图片
 :::
 
-## lazy-image组件
+<!-- ## lazy-image组件
 
-文档中未推荐使用，这里不做分析
+文档中未推荐使用，这里不做分析 -->
 
 ## util工具函数
 
