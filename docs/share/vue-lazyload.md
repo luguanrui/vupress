@@ -4,11 +4,11 @@
 
 1. 项目中使用过，但是不是很明白它是怎么实现的
 
-在开发项目过程中，经常会遇到一个问题，当一个页面中需要加载大量的图片，如果一次性加载完，会浪费网络资源不说，而且页面加载也会很慢，用户体验非常的不好。因此，需要图片懒加载这种技术手段来处理这个问题，然而平时项目都比较赶，最快的方式就去找一个插件来使用。而我选择了[vue-lazyload](https://github.com/hilongjw/vue-lazyload)这款插件，主要原因是在github上star相对来说比较多。
+在开发项目过程中，经常会遇到一个问题，当一个页面中需要加载大量的图片，如果一次性加载完，会浪费网络资源不说，而且页面加载也会出现卡顿，用户体验非常的不好。因此，需要图片懒加载这种技术手段来处理这个问题，然而平时项目都比较赶，最快的方式就去找一个插件来使用。而我选择了[vue-lazyload](https://github.com/hilongjw/vue-lazyload)这款插件，主要原因是在github上star相对来说比较多。
 
 2. 为了不做一个拿来主义者，利用业余时间读下源码，给自己充充电
 
-## 预备知识
+## 准备工作
 
 ### 1.Rollupjs
 
@@ -110,6 +110,7 @@ directives: {
 
 注册全局组件：
 
+函数组件形式：
 ```js
 Vue.component('component-name', {
   props: []
@@ -121,7 +122,7 @@ Vue.component('component-name', {
   // options
 })
 ```
-或者以`.vue`模板的形式注册
+以`.vue`模板的形式：
 ```js
 import ComponentA from '@/components/ComponentA'
 Vue.component('component-name', ComponentA)
@@ -129,13 +130,15 @@ Vue.component('component-name', ComponentA)
   
 ### 5.图片懒加载的原理
    
-懒加载的应用场景：
-
-- 当图片出现在视口中时，再加载图片
+懒加载的应用场景：当图片出现在视口中时，再加载图片
 
 实现步骤：
-1. 将图片的`url`存放到`data-src`自定义属性（可随便设置）中（通过`el.dataset.src`来获取该属性的值）
-2. 实例化`Image`对象来缓存图片，当图片出现在视口中时，再将`data-src`的值赋给缓存图片的`src`，从而实现图片的懒加载，最后在图片加载成功的事件中，将缓存图片的`src`设置到对应的 `img` 标签的 `src`上
+1. 先将图片的`url`存放到`data-src`自定义属性（可随便设置）中（通过`el.dataset.src`来获取该属性的值）
+2. 实例化`Image`对象得到缓存对象`cacheImg`
+3. 判断图片是否出现在视口中`checkInView`
+4. 如果图片出现在视口中，将图片的`data-src`赋值给`cacheImg`的`src`，加载图片
+5. 通过事件`onload`，判断图片加载成功，如果是，则将`cacheImg`的`src`赋值给图片的`src`
+6. 通过事件`onerror`，判断图片失败，这时，将`error`图片的url赋值给图片的`src`
 
 简单实现：
 
@@ -146,18 +149,21 @@ preloadImg() {
   // 遍历 imgList
   imgList.forEach(el => {
     // 实例化Image对象
-    let img = new Image()
-    // 将 data-src 中的值赋值给 img 的 src，此时会加载图片
-    img.src = item.dataset.src
-    // 图片加载完成
-    img.onload = () => {
-      // 将 img.src 设置给对应的 el src
-      el.setAttribute("src", img.src);
-    }
-    // 图片加载失败
-    img.onerror = () => {
-      // 设置 error 图片
-      el.setAttribute("src", './error.jpg');
+    let cacheImg = new Image()
+    // 检查图片是否出现在视口中
+    if (checkInView(el)){
+      // 将 data-src 中的值赋值给 cacheImg 的 src，此时会加载图片
+      cacheImg.src = el.dataset.src
+      // 图片加载完成
+      cacheImg.onload = () => {
+        // 将 img.src 设置给对应的 el src
+        el.setAttribute("src", cacheImg.src);
+      }
+      // 图片加载失败
+      img.onerror = () => {
+        // 设置 error 图片
+        el.setAttribute("src", './error.jpg');
+      }
     }
   })
 }
@@ -175,9 +181,11 @@ getBoundingClientRect的图解：
 
 ```js
 checkInView() {
-  const rect = el.getBoundingClientRect()
-  const yInView = rect.top < window.innerHeight && rect.bottom > 0
-  const xInView = rect.left < window.innerWidth && rect.right > 0
+  const rect = el.getBoundingClientRect() // 获取当前dom元素的大小及其相对于视口的位置
+  const height = window.innerHeight // 视口高度
+  const width = window.innerWidth  // 视口宽度
+  const yInView = rect.top < height && rect.bottom > 0 // 纵向出现在视口中
+  const xInView = rect.left < width && rect.right > 0 // 横向出现在视口中
   return yInView && xInView
 },
 ```
@@ -224,8 +232,6 @@ createObserver() {
   // observe.unobserve(document.getElementById('element'))
 },
 ```
-
-了解完以上预备知识点，下面就可以正式的开始源码解读咯
 
 ## 如何调试源码
 
@@ -342,7 +348,7 @@ export default {
 从上面的分析，可以看出来，入口文件做了如下几件事：
 
 - 提供了注册插件的入口`install`
-- 在注册插件的同时，注册了 `lazy-component`, `lazy-image` 全局组件
+- 在注册插件的同时，注册了 `lazy-component`全局组件
 - 在注册插件的同时，注册了 `v-lazy`, `v-lazy-container` 全局指令
 
 ::: warning
