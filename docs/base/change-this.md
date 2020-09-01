@@ -1,4 +1,4 @@
-# 改变this执行
+# 改变函数对象中的this指向
 
 ## 箭头函数与普通函数的区别
 
@@ -7,12 +7,117 @@
 - 箭头函数中的没有`arguments`（类数组），只能基于`...arg`获取传的参数集合(数组)
 - 箭头函数不能被new执行，因为箭头函数没有`this`，也没有`prototype`
 
-call，apply,bind 特点：
-- 都是改变当前this的指向
-- call和apply立即执行当前函数
-- bind并不执行当前函数,而是返回一个函数
+## call/apply/bind
 
-## call
+使用案例：
+
+```js
+// 定义函数
+function fn(a,b) {
+    this.xxx = 3
+    console.log(a, b, this)
+    return a + b
+}
+
+fn(1,2)                     // 1,2,Window
+console.log(xxx)  
+
+const obj = {m: 0}
+
+// 改变this指向
+// call参数平铺
+fn.call(obj, 1,2)            // 1,2, obj
+fn.call(undefined, 1,2)      // 1,2, Window
+fn.call(null,1,2)            // 1,2, Window
+// apply参数为数组
+fn.apply(obj, [1,2])         // 1,2, obj
+
+// bind返回一个新的函数
+fn.bind(obj)(3,4)            // 3,4, obj
+fn.bind(obj, 5)(3,4)         // 5,3, obj
+fn.bind(obj, 5, 6)(3,4)      // 5,6, obj
+
+```
+
+### 区别
+
+- call/apply：**调用函数**，指定函数中的`this`为**第一个参数的值**
+- bind：**返回一个新的函数**，新函数内部会调用原来的函数，且`this`为bind指定的**第一个参数的值**
+
+::: warning 注意
+如果 obj 为 undefined 或 null，this 指向 Window
+:::
+
+### 应用
+
+- call/bind：根据伪数组生成真数组
+- bind：react中组件的自定义方法 / vue中的事件回调函数内部
+
+### 自定义call、apply
+
+1. 给obj添加一个临时方法，方法名任意，值为当前函数
+2. 通过obj调用这个临时方法，并将接收的参数传入
+3. 删除obj上的这个临时方法属性
+
+call():
+```js
+Function.prototype.call = function(obj, ...args) {
+  // console.log('call()')
+  // 执行函数
+  // this(...args)
+
+  // 处理obj是undefined或者null的情况
+  if (obj===undefined || obj===null) {
+    obj = window
+  }
+
+  // 给obj添加一个方法: tempFn: this
+  obj.tempFn = this
+  // 调用obj的tempFn方法, 传入rags参数, 得到返回值
+  const result = obj.tempFn(...args)
+  // 删除obj上的temFn
+  delete obj.tempFn
+  // 返回方法的返回值
+  return result
+}
+```
+
+apply():
+```js
+Function.prototype.apply = function(obj, args) {
+  // 处理obj是undefined或者null的情况
+  if (obj===undefined || obj===null) {
+    obj = window
+  }
+
+  // 给obj添加一个方法: tempFn: this
+  obj.tempFn = this
+  // 调用obj的tempFn方法, 传入rags参数, 得到返回值
+  const result = obj.tempFn(...args)
+  // 删除obj上的temFn
+  delete obj.tempFn
+  // 返回方法的返回值
+  return result
+}
+```
+
+### 自定义bind
+
+1. 返回一个新函数
+2. 在新函数内部通过原函数对象的call方法来执行原函数，指定this为obj，指定参数为bind调用的参数和后面新函数调用的参数
+
+```js
+Function.prototype.bind = function(obj, ...args) {
+  // 返回一个新函数
+  return (...args2) => {
+    // 调用原来函数, 指定this为obj, 参数列表由args和args2依次组成
+    return this.call(obj, ...args, ...args2)
+  }
+}
+```
+
+## 其他自定义实现方式
+### call
 
 调用方法：
 ```js
@@ -37,7 +142,7 @@ Function.prototype._call = function(context) {
 }
 ```
 
-## apply
+### apply
 
 调用方法：
 ```js
@@ -67,7 +172,7 @@ Function.prototype._apply = function (context) {
 }
 ```
 
-## bind
+### bind
 
 调用方法：
 ```js
