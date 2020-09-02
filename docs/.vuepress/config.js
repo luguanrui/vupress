@@ -91,6 +91,7 @@ module.exports = {
         "error",
         "change-this",
         "debounce-throttle",
+        "array",
         "es6",
       ],
       "/share/": [
