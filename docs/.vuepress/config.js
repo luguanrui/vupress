@@ -98,6 +98,7 @@ module.exports = {
       ],
       "/share/": [
         ["", "目录"],
+        "document-flow-download",
         "vue-lazyload",
         "last-child",
         "vue-bind-string",

@@ -1,5 +1,6 @@
 # 目录
 
+- [二进制流文件下载](./document-flow-download.md)
 - [vue-lazyload源码阅读](./vue-lazyload.md)
 - [获取某年某个月的最后一天](./date.md)
 - [动态表格](./dynamic-table.md)
