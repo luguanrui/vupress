@@ -122,6 +122,7 @@ module.exports = {
   plugins: [
     "@vuepress/medium-zoom",
     "@vuepress/back-to-top",
+    "vuepress-plugin-nprogress",
     [
       "@vuepress/last-updated",
       {
