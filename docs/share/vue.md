@@ -1,5 +1,24 @@
 # vue相关
 
+## 编程式导航实现新窗口打开
+
+### 业务场景
+
+新开窗口，并携带参数
+
+### 技术实现
+
+```js
+let routeData = this.$router.resolve({
+    path: '/erp/contract/info',
+    query: {
+        name: 'luguanrui',
+        age: 6
+    },
+})
+window.open(routeData.href, '_blank');
+```
+
 ## 初始化数据
 
 ### 业务场景
