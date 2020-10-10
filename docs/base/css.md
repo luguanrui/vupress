@@ -35,13 +35,18 @@ BFC的作用：
 
 ## 盒模型
 
-1. 概念
+1. [概念](https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Box_Model/Introduction_to_the_CSS_box_model)
 
-![盒模型](../public/box-model.gif)
+![盒模型](./images/boxmodel.png)
 
-盒模型包括：实际内容（content）、内边距（padding）、边框（border）、外边距（margin）
+说明：（四个部分）
 
-2. **标准模型**和**IE模型**的区别：计算宽度和高度的不同
+- 内容边界content（通过 width、min-width、max-width、height、min-height，和 max-height 控制）
+- 内边距边界padding（padding-top、padding-right、padding-bottom、padding-left，和简写属性 padding 控制）
+- 边框边界border（边框的粗细由 border-width 和简写的 border 属性控制）
+- 外边框边界margin（由 margin-top、margin-right、margin-bottom、margin-left，和简写属性 margin 控制）
+
+1. **标准模型**和**IE模型**的区别：计算宽度和高度的不同
 
 **标准模型**：设置的width或height是对 **实际内容（content）的width或height** 进行设置，内容周围的border和padding另外设置
 ```
