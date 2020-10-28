@@ -4,7 +4,7 @@
 
 ### 业务场景
 
-新开窗口，并携带参数
+vue项目，新开tab窗口，并携带参数
 
 ### 技术实现
 
@@ -19,7 +19,7 @@ let routeData = this.$router.resolve({
 window.open(routeData.href, '_blank');
 ```
 
-## 初始化数据
+## 弹窗关闭初始化数据
 
 ### 业务场景
 
