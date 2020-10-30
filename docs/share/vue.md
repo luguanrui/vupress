@@ -5,6 +5,7 @@
 ### 技术实现
 
 dialog.vue
+
 ```vue
 <template>
   <el-dialog title="提示" :visible="visible" width="30%" :before-close="handleCloseDialog">
@@ -67,6 +68,7 @@ export default {
 ```
 
 app.vue
+
 ```vue
 <template>
   <div id="app">
@@ -100,10 +102,12 @@ export default {
 ```
 
 ::: tip 说明
+
 1. 引用组件时，加上`:visible.sync="visible"`,组件内部是否使用修饰符`.sync`无所谓
 2. 关闭组件时，使用`this.$emit('update:visible', false)`
 3. 为了能够使用`mounted`,引用组件时，加上`v-if="visible"`，这样在关闭弹窗时，弹窗组件会销毁
 :::
+
 ## 循环组件引用
 
 ### 业务场景
@@ -113,6 +117,7 @@ export default {
 ### 问题分析
 
 app.vue
+
 ```vue
 <template>
   <div id="app">
@@ -141,6 +146,7 @@ export default {
 ```
 
 drawer-one.vue
+
 ```vue
 <template>
   <el-drawer title="第一个抽屉" :visible.sync="visible" :before-close="handleClose" size="50%" append-to-body>
@@ -177,6 +183,7 @@ export default {
 ```
 
 drawer-two.vue
+
 ```vue
 <template>
   <el-drawer title="第二个抽屉" :visible.sync="visible" :direction="direction" :before-close="handleClose" append-to-body size="50%">
@@ -213,13 +220,16 @@ export default {
 ```
 
 ::: warning
+
 1. 当点击`打开第二个抽屉`的按钮时，`抽屉二`正常打开，但是控制台报 `DrawerOne`组件未注册
 :::
+
 ![](./images/component-loop.png)
 
 ### 解决方案
 
 drawer-one.vue
+
 ```vue
 <template>
   <el-drawer title="第一个抽屉" :visible.sync="visible" :before-close="handleClose" size="50%" append-to-body>
