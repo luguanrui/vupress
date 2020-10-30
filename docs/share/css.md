@@ -12,6 +12,7 @@
 ### 技术实现
 
 添加如下的`css`:
+
 ```css
 word-wrap: break-word; // 在长单词或 URL 地址内部进行换行
 word-break: break-all;  // 允许在单词内换行
@@ -85,7 +86,7 @@ outline: none;
 }
 
 /*定义滑块颜色、内阴影及圆角*/
-::-webkit-scrollbar-thumb{ 
+::-webkit-scrollbar-thumb{
     border-radius: 7px;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
     background-color: #E8E8E8;
@@ -114,12 +115,12 @@ outline: none;
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8"> 
-<title>菜鸟教程(runoob.com)</title> 
-<style> 
+<meta charset="utf-8">
+<title>菜鸟教程(runoob.com)</title>
+<style>
 .my-class:last-child
 {
-	background:#ff0000;
+    background:#ff0000;
 }
 </style>
 </head>
@@ -142,12 +143,12 @@ outline: none;
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8"> 
-<title>菜鸟教程(runoob.com)</title> 
-<style> 
+<meta charset="utf-8">
+<title>菜鸟教程(runoob.com)</title>
+<style>
 .my-class:last-child
 {
-	background:#ff0000;
+    background:#ff0000;
 }
 </style>
 </head>
@@ -168,15 +169,16 @@ outline: none;
 定义：匹配`父级`中最后一个`特定元素`的一个子元素
 
 匹配不到：
+
 ```html
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8"> 
-<title>菜鸟教程(runoob.com)</title> 
-<style> 
+<meta charset="utf-8">
+<title>菜鸟教程(runoob.com)</title>
+<style>
 .my-class:last-of-type{
-	background:#ff0000;
+    background:#ff0000;
 }
 </style>
 </head>
@@ -199,11 +201,11 @@ outline: none;
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8"> 
-<title>菜鸟教程(runoob.com)</title> 
-<style> 
+<meta charset="utf-8">
+<title>菜鸟教程(runoob.com)</title>
+<style>
 .my-class:last-of-type{
-	background:#ff0000;
+    background:#ff0000;
 }
 </style>
 </head>
@@ -238,6 +240,7 @@ outline: none;
 ```
 
 ::: warning  注意
+
 1. 使用`position:sticky`属性，父级元素不能有任何overflow:visible以外的overflow设置，否则没有粘滞效果
 2. 在`antd-mobile`的`tab`标签上使用时，需要注意父级存在overflow属性
 :::
@@ -246,11 +249,12 @@ outline: none;
 
 ## 让子元素水平垂直居中的方法
 
-### position 
+### position
 
 适用的情况：子元素宽高已知(position:absolute )
-      
+
 子元素
+
 ```css
 position: absolute; 
 left: 50%;
@@ -263,12 +267,15 @@ margin-top: -自身一半高度;
 
 适用的情况：子元素宽高未知，能实现垂直居中
 父元素：
+
 ```css  
 display: table-cell;
-vertical-align: middle; 
+vertical-align: middle;
 ```
-子元素： 
-```css   
+
+子元素：
+
+```css
 margin: 0 auto;
 ```
 
@@ -277,21 +284,23 @@ margin: 0 auto;
 适用的情况：子元素宽高未知(定位 + transform:translate(-50%,-50%))
 
 子元素
-```css    
-position: relative / absolute; 
+
+```css 
+position: relative / absolute;
 
 /*top和left偏移各为50%*/
-top: 50%; 
-left: 50%; 
+top: 50%;
+left: 50%;
 
-/*translate(-50%,-50%) 偏移自身的宽和高的-50%*/ 
-transform: translate(-50%, -50%); 
-``` 
+/*translate(-50%,-50%) 偏移自身的宽和高的-50%*/
+transform: translate(-50%, -50%);
+```
 
 ### flex
 
 适用的情况：子元素宽高未知
 父元素：
+
 ```css
 display: flex;
 align-items: center; 
