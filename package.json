@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "dayjs": "^1.8.28",
-    "vuepress": "^1.4.0",
-    "vuepress-plugin-nprogress": "^1.1.8"
+    "vuepress": "^1.7.1",
+    "vuepress-plugin-nprogress": "^1.1.8",
+    "vuepress-plugin-one-click-copy": "^1.0.2"
   }
 }
