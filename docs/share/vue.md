@@ -45,7 +45,18 @@ export default {
 ```vue
 <template>
   <div id="app">
-    <MyTable ref="multipleTable" :data="this.tableData" :tooltip-effect="'dark'" :default-sort="{ prop: 'date', order: 'descending' }" @selection-change="handleSelectionChange" :current-page="pagination.currentPage" :page-size="pagination.pageSize" :total="pagination.total" :layout="pagination.layout" @size-change="handleSizeChange" @current-change="handleCurrentChange">
+    <MyTable
+      ref="multipleTable"
+      :data="this.tableData"
+      :tooltip-effect="'dark'"
+      :default-sort="{ prop: 'date', order: 'descending' }"
+      @selection-change="handleSelectionChange"
+      :current-page="pagination.currentPage"
+      :page-size="pagination.pageSize"
+      :total="pagination.total"
+      :layout="pagination.layout"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange">
       <template slot="columns">
         <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column prop="date" label="日期" sortable width="180"> </el-table-column>
