@@ -91,7 +91,7 @@ module.exports = {
         },
       },
     ],
-    // 赋值代码
+    // 复制代码
     [
       'one-click-copy', {
         copyMessage: '复制成功'

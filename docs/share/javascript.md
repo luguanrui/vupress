@@ -1,4 +1,4 @@
-# JavaScript相关
+# JavaScript
 
 ## 根据图片url，下载图片
 

@@ -1,8 +1,8 @@
-# 目录
+# 分享
 
-- [vue相关](./vue.md)
-- [JavaScript相关](./javascript.md)
-- [css相关](./css.md)
+- [Vue](./vue.md)
+- [JavaScript](./javascript.md)
+- [CSS](./css.md)
 - [二进制流文件下载](./document-flow-download.md)
 - [vue-lazyload源码阅读](./vue-lazyload.md)
 - [自动部署](./auto-deploy.md)
