@@ -9,7 +9,7 @@ table.vue
 ```vue
 <template>
   <div class="table-wrapper">
-    <el-table ref="table" v-bind="$attrs" v-on="$listeners" v-adaptive="{ bottomOffset: 72 }" height="100px">
+    <el-table ref="table" v-bind="$attrs" v-on="$listeners">
       <slot name="columns"></slot>
     </el-table>
     <div class="pagination-wrapper">
