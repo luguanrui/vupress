@@ -1,5 +1,178 @@
 # vue相关
 
+## elementUI table+分页封装
+
+### 技术实现
+
+table.vue
+
+```vue
+<template>
+  <div class="table-wrapper">
+    <el-table ref="table" v-bind="$attrs" v-on="$listeners" v-adaptive="{ bottomOffset: 72 }" height="100px">
+      <slot name="columns"></slot>
+    </el-table>
+    <div class="pagination-wrapper">
+      <el-pagination v-bind="$attrs" v-on="$listeners"></el-pagination>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {}
+  },
+  computed: {},
+  mounted() {
+    console.log(this.$attrs)
+    console.log(this.$listeners)
+  },
+  methods: {},
+}
+</script>
+<style>
+.pagination-wrapper {
+  text-align: right;
+  padding: 20px;
+}
+</style>
+
+```
+
+使用：
+
+```vue
+<template>
+  <div id="app">
+    <MyTable ref="multipleTable" :data="this.tableData" :tooltip-effect="'dark'" :default-sort="{ prop: 'date', order: 'descending' }" @selection-change="handleSelectionChange" :current-page="pagination.currentPage" :page-size="pagination.pageSize" :total="pagination.total" :layout="pagination.layout" @size-change="handleSizeChange" @current-change="handleCurrentChange">
+      <template slot="columns">
+        <el-table-column type="selection" width="55"> </el-table-column>
+        <el-table-column prop="date" label="日期" sortable width="180"> </el-table-column>
+        <el-table-column prop="name" label="姓名" sortable width="180"> </el-table-column>
+        <el-table-column prop="address" label="地址"> </el-table-column>
+      </template>
+    </MyTable>
+  </div>
+</template>
+
+<script>
+import MyTable from './components/table'
+export default {
+  components: {
+    MyTable,
+  },
+  data() {
+    return {
+      tableData: [
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄',
+        },
+        {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1517 弄',
+        },
+        {
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1519 弄',
+        },
+        {
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1516 弄',
+        },
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄',
+        },
+        {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1517 弄',
+        },
+        {
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1519 弄',
+        },
+        {
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1516 弄',
+        },
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄',
+        },
+        {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1517 弄',
+        },
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄',
+        },
+        {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1517 弄',
+        },
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄',
+        },
+        {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1517 弄',
+        },
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄',
+        },
+        {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1517 弄',
+        },
+      ],
+      multipleSelection: [],
+      pagination: {
+        currentPage: 1,
+        pageSize: 10,
+        layout: 'total, sizes, prev, pager, next, jumper',
+        total: 100,
+      },
+    }
+  },
+  methods: {
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    handleSizeChange(val) {
+      console.log(val)
+    },
+    handleCurrentChange(val) {
+      console.log(val)
+    },
+    handleShow() {
+      this.show = !this.show
+    },
+  },
+}
+</script>
+```
+
 ## elementUI table表格自适应
 
 ### 技术实现
