@@ -1,6 +1,6 @@
 # Vue
 
-## AntDesignVue自定义图片文件上传
+## AntDesignVue自定义图片文件上组件
 
 ### 技术实现
 
