@@ -1,6 +1,176 @@
 # Vue
 
-## elementUI table+分页封装
+## AntDesignVue自定义图片文件上传
+
+### 技术实现
+
+```vue
+<template>
+  <div class="upload-wrapper">
+    <a-upload
+      ref="upload"
+      list-type="picture-card"
+      :accept="acceptStr"
+      :file-list="fileList"
+      @preview="handlePreview"
+      @change="handleChange"
+      :before-upload="beforeUpload"
+      :remove="handleRemove"
+      :customRequest="customRequest"
+      :multiple="true"
+      :disabled="disabled">
+      <div v-if="isCanAdd">
+        <a-icon type="plus" />
+        <div class="ant-upload-text">
+          上传
+        </div>
+      </div>
+    </a-upload>
+  </div>
+</template>
+
+<script>
+import { upload } from '@/api/common'
+import _ from 'lodash'
+
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
+}
+export default {
+  props: {
+    fileObjList: String,
+    disabled: [Boolean],
+  },
+  watch: {
+    fileObjList: {
+      handler(val) {
+        let arr = val ? JSON.parse(val) : []
+        if (arr.length) {
+          let sessionId = localStorage.getItem('sessionId')
+          arr.forEach((item) => {
+            item.url += `?sessionId=${sessionId}`
+          })
+        }
+        this.fileList = arr
+      },
+      immediate: true,
+    },
+  },
+  data() {
+    return {
+      fileListLength: 9,
+      previewVisible: false,
+      previewImage: '',
+      fileList: [],
+      newFileList: [],
+      acceptStr: 'image/png,image/jpg,image/jpeg,\n' +
+                 'application/vnd.openxmlformats-officedocument.presentationml.presentation,\n' +
+                 'application/vnd.ms-powerpoint,\n' +
+                 'application/vnd.ms-excel,\n' +
+                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,\n' +
+                 'application/msword,\n' +
+                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document,\n' +
+                 'application/pdf,\n' +
+                 'ext/plain',
+    }
+  },
+  computed: {
+    isCanAdd() {
+      if (this.disabled) {
+        return false
+      } else if (this.fileList.length >= this.fileListLength) {
+        return false
+      } else {
+        return true
+      }
+    },
+  },
+  methods: {
+    clearUpload() {
+      this.fileList = []
+    },
+    // 自定义上传
+    customRequest(data) {
+      this.upload(data)
+    },
+    // 取消预览
+    handleCancelPreview() {
+      this.previewVisible = false
+    },
+    // 预览
+    async handlePreview(file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj)
+      }
+      this.previewImage = file.url || file.preview
+      this.previewVisible = true
+      window.open(file.url)
+    },
+
+    beforeUpload(file) {
+      const isLt2M = file.size / 1024 / 1024 < 5
+      if (!isLt2M) {
+        this.$message.error('上传文件大小不可超过5M!')
+        return false
+      }
+    },
+    handleChange() {
+      // console.log(info,'info')
+      // console.log(file, "file");
+      // this.fileList = fileList;
+      // console.log(fileList, 'fileList')
+    },
+    // 删除
+    handleRemove(file) {
+      console.log(file, 'file')
+      this.fileList = this.fileList.filter((item) => item.uid !== file.uid)
+      this.newFileList = this.newFileList.filter((item) => item.uid !== file.uid)
+      this.$emit('uploadSuccess', this.newFileList)
+    },
+    // 上传
+    async upload(data) {
+      const formData = new FormData()
+      formData.append('file', data.file)
+      data.onProgress()
+
+      const { code, rs } = await upload(formData)
+      if (code === 200) {
+        data.onSuccess() //上传成功
+        this.newFileList = []
+        let fileFormate = this.fileFormatter(rs.name, rs.url)
+        this.fileList.push(fileFormate)
+        this.fileList.forEach((item) => {
+          let { uid, name, url } = item
+          this.newFileList.push({ uid, name, url: url.split('?')[0] })
+        })
+        this.$emit('uploadSuccess', this.newFileList)
+      } else {
+        data.onError() //上传失败
+      }
+    },
+
+    // 图片格式化
+    fileFormatter(name, url) {
+      let sessionId = localStorage.getItem('sessionId')
+      let file = {
+        uid: _.uniqueId(),
+        name: name,
+        url: url + `?sessionId=${sessionId}`,
+      }
+      return file
+    },
+  },
+}
+</script>
+
+```
+
+## ElementUI table+分页封装
 
 ### 技术实现
 
@@ -114,7 +284,7 @@ export default {
 </script>
 ```
 
-## elementUI table表格自适应
+## ElementUI table表格自适应
 
 ### 技术实现
 
@@ -197,7 +367,7 @@ export default {
 }
 ```
 
-## elementUI弹窗组件简单封装
+## ElementUI弹窗组件简单封装
 
 ### 技术实现
 
@@ -501,7 +671,7 @@ Object.assign(this.$data, this.$options.data())
 
 ### 业务场景
 
-使用`elementui`遍历一个`tabs`数组，为每个`tab`标签页的选项卡头设置显示文字，要求添加上序号,并从1开始
+使用`ElementUI`遍历一个`tabs`数组，为每个`tab`标签页的选项卡头设置显示文字，要求添加上序号,并从1开始
 
 ### 技术实现
 
@@ -530,7 +700,7 @@ Object.assign(this.$data, this.$options.data())
 
 ### 技术实现
 
-- 使用elementUI 的 table
+- 使用ElementUI 的 table
 - 通过接口返回的列字段遍历匹配到每个prop
 
 ```vue
@@ -1033,6 +1203,6 @@ computedData() {
 
 ### Q&A
 
-1. elementUI的dialog组件，使用visible属性绑定的变量位于vuex的store内，使用.sync不会正常工作
+1. ElementUI的dialog组件，使用visible属性绑定的变量位于vuex的store内，使用.sync不会正常工作
 ，还会报错`[Vue warn]: Computed property "xxx" was assigned to but it has no setter.`,此时需要去除 .sync 修饰符
 2. 复杂业务拓展，使用的优惠券的类型的冲突，比如使用了`type === 1`就不能使用`type === 2`
