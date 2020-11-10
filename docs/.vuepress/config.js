@@ -24,6 +24,7 @@ module.exports = {
           {
             text: 'Vue',
             items: [
+              { text: 'v3', link: '/frame/vue/v3/' },
               { text: 'v2', link: '/frame/vue/v2/' },
               { text: 'Vuex', link: '/frame/vue/vuex/' },
               { text: 'VueRouter', link: '/frame/vue/vue-router/' },
