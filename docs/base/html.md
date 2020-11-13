@@ -96,19 +96,19 @@ js
 - DTD规范
 
 > DTD（document type defination，文档类型定义）是一系列的语法规则，用来定义XML或(X)HTML的文件类型。浏览器会使用它来判断文档类型，决定使用何种协议来解析，以及切换浏览器模式。（告诉浏览器当前文档是什么文档类型，浏览器使用相应的引擎来解析和渲染）
-    
+
 常见的DOCTYPE有哪些？
-    
+
 - HTML5
-    
+
 ```html
 <!DOCTYPE html>
 ```
 
 - HTML4.01 Strict（严格模式）
-    
+
 该DTD包含所有HTML元素和属性，但是不包含展示类的和弃用类的元素（比如font）
-    
+
 ```html
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 ```
@@ -120,3 +120,47 @@ js
 ```html
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 ```
+
+## Canvas与SVG的区别
+
+### SVG
+
+- SVG 指可伸缩矢量图形 (Scalable Vector Graphics)
+- 适合做google地图，因为是矢量图，缩放不影响显示
+- 用svg标签，里面可以是circle标签
+
+```xml
+<svg width="100%" height="100%"  >
+  <circle cx="300" cy="60" r="50" stroke="#ff0" stroke-width="3" fill="red" />
+</svg>
+```
+
+- SVG 是一种使用 XML 描述 2D 图形的语言
+- SVG 基于 XML，这意味着 SVG DOM 中的每个元素都是可用的。您可以为某个元素附加 JavaScript 事件处理器
+- 在 SVG 中，每个被绘制的图形均被视为对象。如果 SVG 对象的属性发生变化，那么浏览器能够自动重现图形
+
+特点：
+
+- 不依赖分辨率
+- 支持事件处理器
+- 最适合带有大型渲染区域的应用程序（比如谷歌地图）
+- 复杂度高会减慢渲染速度（任何过度使用 DOM 的应用都不快）
+- 不适合游戏应用
+
+### Canvas
+
+- Canvas 通过 JavaScript 来绘制 2D 图形
+- Canvas 是逐像素进行渲染的
+- 在 canvas 中，一旦图形被绘制完成，它就不会继续得到浏览器的关注。如果其位置发生变化，那么整个场景也需要重新绘制，包括任何或许已被图形覆盖的对象
+
+特点：
+
+- 依赖分辨率
+- 不支持事件处理器
+- 弱的文本渲染能力
+- 能够以 .png 或 .jpg 格式保存结果图像
+- 最适合图像密集型的游戏，其中的许多对象会被频繁重绘
+
+### 对比简述
+
+都是2D做图，svg是矢量图，canvas是位图。Canvas 是逐像素进行渲染的，适合游戏

@@ -2,7 +2,7 @@
 
 ## MVVM
 
-<img src="./images/mvvm.png">
+![](./images/mvvm.png)
 
 ### 什么是MVVM
 
@@ -11,7 +11,6 @@ MVVM是`Model-View-ViewModel`缩写，也就是把`MVC`中的`Controller`演变�
 - Model【模型】层代表数据模型，即 纯js对象
 - View【视图】代表UI组件，即 DOM
 - ViewModel【视图模型】是View和Model层的桥梁,在vue中指 Vue,包括`DOM事件的监听`以及`数据的绑定`
-
 
 ### MVVM的特点
 
@@ -36,7 +35,7 @@ MVVM作为绑定的入口，整合Observer，Compile和Watcher三者，通过Obs
 
 ## vue2.x中如何监测数组变化
 
-<img src="../../../public/vue-array.png"/>
+![](../../../public/vue-array.png)
 
 使用了函数劫持的方式，`重写了数组的方法`，Vue将data中的数组进行了原型链重写，指向了自己定义的数组原型方法，包含如下方法：
 
@@ -58,7 +57,7 @@ MVVM作为绑定的入口，整合Observer，Compile和Watcher三者，通过Obs
 
 生命周期图：
 
-<img class="img" src="../../../public/vue-lifecycle.png" width="400">
+![](../../../public/vue-lifecycle.png)
 
 8个阶段：Vue 实例的创建到组件销毁的一个的过程
 
@@ -69,7 +68,7 @@ MVVM作为绑定的入口，整合Observer，Compile和Watcher三者，通过Obs
 
 描述：
 
-<img class="img" src="../../../public/vue-lifecycle2.jpeg" width="600" />
+![](../../../public/vue-lifecycle2.jpeg)
 
 组件加载渲染过程：**beforeCreate-->created-->beforeMount-->mounted**
 
@@ -146,7 +145,7 @@ obj: {
 
 ## Vue2.x数据绑定与响应式数据原理
 
-<img src="../../../public/vue-obj.png"/>
+![](../../../public/vue-obj.png)
 
 - 监听data变化
 - 组件渲染和更新的流程
@@ -204,23 +203,29 @@ console.log(a===1 && a===2 && a===3)
 
 ## 组件通信
 
-1. 父子组件通信
-    
-- 父->子`props`，子->父 `$on、$emit`
-- 获取父子组件实例 `$parent`、`$children`
-- `ref` 获取实例的方式调用组件的属性或者方法
-- `provide`、`inject` 官方不推荐使用，但是写组件库时很常用
+父子组件通信
 
-2. 兄弟组件通信
+方式 | api
+---|---
+父传子 | props
+子传父 | $on、$emit
+获取父子组件实例 | $parent、$children
+获取实例的方式调用组件的属性或者方法 | $ref
+官方不推荐使用，但是写组件库时很常用 | provide,inject
 
-- `Event Bus` 实现跨组件通信 `Vue.prototype.$bus = new Vue`
-- `vuex`
+兄弟组件通信
 
-3. 跨级组件通信
+方式 | api
+---|---
+Event Bus | 实现跨组件通信 `Vue.prototype.$bus = new Vue()`
+vuex |
 
-- `vuex`
-- `$attrs`、`$listeners`
-- `provide`、`inject`
+跨级组件通信
+方式 | api
+---|---
+vuex |
+$attrs、$listeners |
+provide、inject |
 
 ## 如何将组件所有的props传递给子组件
 
