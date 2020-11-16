@@ -1,7 +1,6 @@
 # 目录
 
 - [html5相关](./html.md)
-- [页面布局](./layout.md)
 - [css相关](./css.md)
 - [作用域和闭包](./scope.md)
 - [DOM事件](./dom.md)
