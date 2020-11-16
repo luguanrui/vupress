@@ -1,9 +1,11 @@
 # 算法类
 
 ## 将数组转化为树形结构
+
 - 以下数据结构中，id 代表部门编号，name 是部门名称，parentId 是父部门编号，为 0 代表一级部门，
-现在要求实现一个 convert 方法，
+现在要求实现一个 convert 方法
 把原始 list 转换成树形结构，parentId 为多少就挂载在该 id 的属性 children 数组下，结构如下：
+
 ```json
 let list =[
     {id:1,name:'部门A',parentId:0},
@@ -19,6 +21,7 @@ const result = convert(list, ...);
 ```
 
 转换后的结果如下：
+
 ```json
 let result = [
     {
@@ -61,11 +64,11 @@ let result = [
 ```
 
 ## 排序
-    
-  - 快速排序：https://segmentfault.com/a/1190000009426421
-  - 选择排序：https://segmentfault.com/a/1190000009366805
-  - 希尔排序：https://segmentfault.com/a/1190000009461832
-  - 冒泡排序：
+
+- 快速排序：https://segmentfault.com/a/1190000009426421
+- 选择排序：https://segmentfault.com/a/1190000009366805
+- 希尔排序：https://segmentfault.com/a/1190000009461832
+- 冒泡排序：
 
 ## 堆栈、队列、链表
 
@@ -75,17 +78,18 @@ let result = [
     
 ## 递归
 
-  - 递归：https://segmentfault.com/a/1190000009857470
+- 递归：https://segmentfault.com/a/1190000009857470
 
 - 波兰式和逆波兰类
 
-  - 波兰式和逆波兰式
+- 波兰式和逆波兰式
 
 ## 浅拷贝和深拷贝
+
 1. 基本类型--名值存储在栈内存中
 2. 引用数据类型--名存在栈内存中，值存在于堆内存中，但是栈内存会提供一个引用的地址指向堆内存中的值
 3. 浅拷贝复制的数组对象在栈内存中的引用地址
-    
+
 ### 浅拷贝
 
 1. Oject.assign
@@ -111,11 +115,14 @@ const clone = obj => {...obj}
 // 对象或数组
 const deepClone = obj => typeof obj ==='undefined' ? JSON.parse(JSON.stringify(obj)) : null;
 ```
+
 ::: warning 问题
+
 1. 会忽略 `undefined`
 2. 会忽略 `symbol`
 3. 不能序列化函数
 4. 不能解决循环引用的对象
+
 :::
 
 2. for...in + 递归
@@ -135,7 +142,9 @@ const deepClone = obj => {
     return target;
 };
 ```
+
 3. Object.create
+
 ```js
 const deepClone = obj => {
     var copy = Object.create(Object.getPrototypeOf(obj));
@@ -149,14 +158,17 @@ const deepClone = obj => {
     return copy;
 };
 ```
+
 ## 数组去重
 
 数组如下：
+
 ```js
 const arr = [1,1,'true','true',true,true,15,15,false,false, undefined,undefined, null,null, NaN, NaN,'NaN', 0, 0, 'a', 'a',{},{}]
 ```
 
 - Set
+
 ```js
 const unique = arr => [...new Set(arr)]
 
@@ -166,11 +178,13 @@ const unique = arr => Array.from(new Set(arr))
 unique(arr)
 // [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {}, {}]
 ```
+
 ::: warning 问题
 {}无法去重
 :::
 
 - 双层for循环+splice
+
 ```js
 const unique = (arr) => {
       for (var i = 0; i < arr.length; i++) {
@@ -187,7 +201,9 @@ const unique = (arr) => {
 unique(arr)
 // [1, "true", 15, false, undefined, NaN, NaN, "NaN", "a", {}, {}]
 ```
+
 ::: warning 问题
+
 1. null会都去掉
 2. NaN无法去重
 3. 0都会去掉
@@ -195,6 +211,7 @@ unique(arr)
 :::
 
 - indexOf
+
 ```js
 const unique = (arr) => {
     if (!Array.isArray(arr)) {
@@ -213,12 +230,15 @@ const unique = (arr) => {
 unique(arr)
 // [1, "true", true, 15, false, undefined, null, NaN, NaN, "NaN", 0, "a", {}, {}]
 ```
+
 ::: warning 问题
+
 1. NaN无法去重
 2. {}无法去重
 :::
 
 - includes
+
 ```js
 const unique = (arr) => {
     if (!Array.isArray(arr)) {
@@ -238,11 +258,14 @@ const unique = (arr) => {
 unique(arr)
 // [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {…}, {…}]
 ```
+
 ::: warning 问题
+
 1. {}无法去重
 :::
 
 - hasOwnProperty
+
 ```js
 const unique = (arr) => {
     var obj = {};
@@ -255,11 +278,13 @@ const unique = (arr) => {
 unique(arr)
 // [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {}]
 ```
+
 ::: tip 成功
 全部去重
 :::
 
 - filter
+
 ```js
 const unique = (arr) => {
     return arr.filter(function(item, index, arr) {
@@ -270,12 +295,15 @@ const unique = (arr) => {
 unique(arr)
 // [1, "true", true, 15, false, undefined, null, "NaN", 0, "a", {}, {}]
 ```
+
 ::: warning 问题
+
 1. NaN会全部删除掉
 2. {}无法去重
 :::
 
 - reduce+includes
+
 ```js
 const unique = arr =>
     arr.reduce(
@@ -285,10 +313,11 @@ const unique = arr =>
 unique(arr)
 // [1, "true", true, 15, false, undefined, null, NaN, "NaN", 0, "a", {}, {}]
 ```
+
 ::: warning 问题
+
 1. {}无法去重
 :::
-
 
 ## 实现36进制转换
 
@@ -322,13 +351,14 @@ function flatten(arr) {
 把接受多个参数的函数变为接受单一参数的函数，并且返回接收余下的参数 且 返回的结果的 新函数
 
 使用场景：
+
 - 参数复用
 - 提前确认，避免每次都重复判断
 - 延迟计算/运行
 
 ```js
 const curry = func => {
-    const g = (...allArgs) => allArgs.length >= func.length ? func(...allArgs) 
+    const g = (...allArgs) => allArgs.length >= func.length ? func(...allArgs)
     : (...args) => g(...allArgs, ...args)
     return g
 }
