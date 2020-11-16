@@ -75,7 +75,7 @@ module.exports = {
       },
     ],
     sidebar: {
-      '/base/': [['', '目录'], 'html', 'layout', 'css', 'scope', 'dom', 'prototype-chain', 'communications', 'http', 'safe', 'algorithm', 'event-loop', 'page-performance', 'error', 'change-this', 'debounce-throttle', 'array', 'object', 'string', 'es6'],
+      '/base/': [['', '目录'], 'html', 'css', 'scope', 'dom', 'prototype-chain', 'communications', 'http', 'safe', 'algorithm', 'event-loop', 'page-performance', 'error', 'change-this', 'debounce-throttle', 'array', 'object', 'string', 'es6'],
       '/share/': [['', '目录'], 'vue', 'javascript', 'css', 'document-flow-download', 'vue-lazyload', 'auto-deploy', 'hexo'],
       '/frame/vue/v2/': [['', '目录'], 'reactive', 'render', 'extend'],
     },
