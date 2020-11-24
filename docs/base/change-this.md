@@ -32,7 +32,7 @@ fn.call(null,1,2)            // 1,2, Window
 // apply参数为数组
 fn.apply(obj, [1,2])         // 1,2, obj
 
-// bind返回一个新的函数
+// bind返回一个新的函数，为了看到结果，我们去执行下函数
 fn.bind(obj)(3,4)            // 3,4, obj
 fn.bind(obj, 5)(3,4)         // 5,3, obj
 fn.bind(obj, 5, 6)(3,4)      // 5,6, obj
@@ -41,11 +41,16 @@ fn.bind(obj, 5, 6)(3,4)      // 5,6, obj
 
 ### 区别
 
-- call/apply：**调用函数**，指定函数中的`this`为**第一个参数的值**
-- bind：**返回一个新的函数**，新函数内部会调用原来的函数，且`this`为bind指定的**第一个参数的值**
+api | 函数是否执行 | this指向 | 参数
+---|---|---|---
+call | 执行 | 指向第一个参数 | call(obj, param1,param1...)
+apply | 执行 | 指向第一个参数 | apply(obj, [param1,param1...])
+bind | 返回一个新的函数 <br>（新函数内部会调用原来的函数） | 指向第一个参数 | bind(obj, param1,param1...)
 
-::: warning 注意
-如果 obj 为 undefined 或 null，this 指向 Window
+::: warning
+
+如果 obj 为 `undefined` 或 `null`，`this` 指向 `Window`对象
+
 :::
 
 ### 应用

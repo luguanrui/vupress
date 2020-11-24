@@ -11,7 +11,7 @@
 
 - 所有**引用类型**的`__proto__`属性指向它**构造函数**的原型对象（`prototype`）
 - 根据定义，`null` 没有原型，并作为这个原型链中的最后一个环节
-
+- `__proto__`是一个内部属性，不建议对其进行直接操作
 :::
 
 ## 构造函数
@@ -195,18 +195,22 @@ function Parent() {
 // 缺点：继承不了父类`原型对象（Parent.prototype）`上的属性和方法
 Parent.prototype.say = function() {}
 function Child() {
-    Parent.call(this) // 或者使用apply
+    // 关键点
+    Parent.call(this) // 或者使用apply，this 指向 Child
     this.type = 'Child'
 }
-// 实例化Child1
+
+// 实例化Child
 console.log(new Child)
 ```
 
-### 2. 借助原型链实现继承：弥补通过构造函数继承的缺点
+### 2. 借助原型链实现继承
 
 方法：将父类构造函数的实例赋值给子类构造函数的原型对象（`Child.prototype = new Parent()`）
 
 原因：子类Child.prototype赋值父类的实例new Parent()，当子类实例化时，`子类实例的__proto__`就等于`子类构造函数的prototype`，`子类实例的__proto__`等于`父类的实例`，因此实现了继承
+
+作用：弥补通过构造函数继承的缺点（继承不了父类构造函数原型对象`（Parent.prototype）`上的属性和方法）
 
 缺点：如果实例化两个子类构造函数，其中一个子类构造函数的原型上的方法和属性改变，另一个实例也会相应改变
 
@@ -218,10 +222,11 @@ function Parent() {
 function Child() {
     this.type = 'Child2'
 }
+// 关键点
 Child.prototype = new Parent()
+
 // 实例化Child1
 console.log(new Child)
-
 // 缺点：改变s1原型对象上的属性和方法会影响到s2对象，原因是s1和s2的__proto__的指向相同（s1.__proto__ === s2.__proto__）
 var s1 = new Child()
 var s2 = new Child()
@@ -235,7 +240,7 @@ console.log(s1.play,s2.play)
 方法：
 
 - 在子类构造函数中执行父类构造函数，
-- 然后将父类的构造函数的实例赋值给子类的原型对象
+- 然后将父类的构造函数的实例 赋值给 子类的原型对象
 
 缺点：父类构造函数执行了两次
 
@@ -245,11 +250,13 @@ function Parent() {
     this.play = [1,2,3]
 }
 function Child() {
-    Parent.call(this) 
+    // 关键点
+    Parent.call(this)
     this.type = 'Child3'
 }
-// 缺点：父级的构造函数执行了两次
+// 关键点
 Child.prototype = new Parent()
+
 var s3 = new Child()
 var s4 = new Child()
 s3.play.push(4)
@@ -271,11 +278,13 @@ function Parent() {
     this.play = [1,2,3]
 }
 function Child() {
+    // 关键点
     Parent.call(this)
     this.type = 'Child4'
 }
-// 缺点：区分不了一个对象是一个子类的实例化还是一个父类的实例化
+// 关键点
 Child.prototype = Parent.prototype
+
 var s5 = new Child()
 var s6 = new Child()
 console.log(s5, s6)
@@ -287,8 +296,8 @@ console.log(s5 instanceof Parent) // true
 
 方法：
 
-- 在子类构造函数中执行父类构造函数，
-- 然后创建父类构造函数的实例继承赋值给子类构造函数的原型对象，
+- 在子类构造函数中执行父类构造函数
+- 然后创建父类构造函数的实例继承赋值给子类构造函数的原型对象
 - 最后将子类构造函数赋值给子类构造函数的原型对象的constructor
 
 ```js
@@ -297,9 +306,11 @@ function Parent()
     this.play = [1,2,3]
 }
 function Child() {
+    // 关键点
     Parent.call(this)
     this.type = 'Child5'
 }
+// 关键点
 Child.prototype = Object.create(Parent.prototype)
 Child.prototype.constructor = Child
 
@@ -313,18 +324,19 @@ console.log(s5.constructor)
 ```js
 class Parent {
     constructor(value) {
-    this.val = value
+        this.val = value
     }
     getValue() {
-    console.log(this.val)
+        console.log(this.val)
     }
 }
 class Child extends Parent {
     constructor(value) {
-    super(value) // Parent.call(this, value)
-    this.val = value
+        super(value) // Parent.call(this, value)
+        this.val = value
     }
 }
+
 let child = new Child(1)
 child.getValue() // 1
 child instanceof Parent // true
