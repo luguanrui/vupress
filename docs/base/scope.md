@@ -4,19 +4,10 @@
 
 JS内置类型有两种：
 
-- 原始类型（又叫基本类型）：
-  - `string`
-  - `number`
-  - `boolean`
-  - `null`
-  - `undefined`
-  - `symbol`（ES6新增）
-- 引用类型：`object`
-
-JS的存储：
-
-- 原始类型存储在 `栈(stack)`上
-- 引用类型存储在 `堆(heap)`上
+分类 | 数据类型 | 存储
+---|---|---
+原始类型（又叫基本类型） | `string`、`number`、<br>`boolean`、`null`、<br>`undefined`、`symbol`（ES6新增）| 栈(stack)
+引用类型 | `object` | 堆(heap)
 
 ![](./images/buit-in-types.jpg)
 
