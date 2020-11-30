@@ -227,7 +227,8 @@ Child.prototype = new Parent()
 
 // 实例化Child1
 console.log(new Child)
-// 缺点：改变s1原型对象上的属性和方法会影响到s2对象，原因是s1和s2的__proto__的指向相同（s1.__proto__ === s2.__proto__）
+// 缺点：改变s1原型对象上的属性和方法会影响到s2对象，
+// 原因是s1和s2的__proto__的指向相同（s1.__proto__ === s2.__proto__）
 var s1 = new Child()
 var s2 = new Child()
 console.log(s1.play,s2.play)
@@ -346,17 +347,16 @@ child instanceof Parent // true
 
 **Object.prototype.toString**方法
 
-```js
-console.log(Object.prototype.toString.call("jerry"));   //[object String]
-console.log(Object.prototype.toString.call(12));        //[object Number]
-console.log(Object.prototype.toString.call(true));     //[object Boolean]
-console.log(Object.prototype.toString.call(undefined));  //[object Undefined]
-console.log(Object.prototype.toString.call(null));      //[object Null]
-console.log(Object.prototype.toString.call({name: "jerry"}));  //[object Object]
-console.log(Object.prototype.toString.call(function(){}));    //[object Function]
-console.log(Object.prototype.toString.call([]));        //[object Array]
-console.log(Object.prototype.toString.call(new Date));   //[object Date]
-console.log(Object.prototype.toString.call(/\d/));   //[object RegExp]
-function Person(){};
-console.log(Object.prototype.toString.call(new Person));//[object Object]
-```
+数据类型 | 判断 | 结果
+---|---|---
+String | Object.prototype.toString.call("jerry") | [object String]
+Number | Object.prototype.toString.call(12) | [object Number]
+Boolean | Object.prototype.toString.call(true) | [object Boolean]
+undefined | Object.prototype.toString.call(undefined) | [object Undefined]
+null | Object.prototype.toString.call(null) | [object Null]
+Object | Object.prototype.toString.call({name: "jerry"}) | [object Object]
+Function | Object.prototype.toString.call(function(){}) | [object Function]
+Array | Object.prototype.toString.call([]) | [object Array]
+Date | Object.prototype.toString.call(new Date) | [object Date]
+RegExp | Object.prototype.toString.call(/\d/) | [object RegExp]
+构造函数 | function Person(){};<br>Object.prototype.toString.call(new Person) | [object Object]
