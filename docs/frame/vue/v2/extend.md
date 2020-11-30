@@ -586,7 +586,143 @@ SSR也就是服务端渲染，也就是将Vue在客户端把标签渲染成HTML�
 
 [参考](https://juejin.im/post/5e04411f6fb9a0166049a073#heading-7)
 
-## vue原理（手写代码，实现数据劫持）
+## 手写代码，实现vue的数据劫持
 
 ```js
+```
+
+## 父组件监听到子组件的生命周期
+
+1. 使用 on 和 emit
+
+```js
+// Parent.vue
+<Child @mounted="doSomething"/>
+// Child.vue
+mounted() {
+  this.$emit("mounted");
+}
+```
+
+2. 使用 hook 钩子函数
+
+```js
+//  Parent.vue
+<Child @hook:mounted="doSomething" ></Child>
+
+doSomething() {
+   console.log('父组件监听到 mounted 钩子函数 ...');
+},
+//  Child.vue
+mounted(){
+   console.log('子组件触发 mounted 钩子函数 ...');
+},
+// 以上输出顺序为：
+// 子组件触发 mounted 钩子函数 ...
+// 父组件监听到 mounted 钩子函数 ...
+```
+
+## 怎么给vue定义全局方法
+
+1. 将方法挂载到 Vue.prototype 上面
+
+```js
+// global.js
+const checkMobile = m => /^[1][0-9]{10}$/.test(m);
+export default {
+  checkMobile,
+  ...
+}
+```
+
+```js
+// main.js
+import Vue from "vue";
+import global from "@/global";
+Object.keys(global).forEach((key) => {
+  Vue.prototype["$g_" + key] = global[key];
+});
+```
+
+```js
+// 挂载之后，在需要引用全局变量的模块处(App.vue)，
+// 不需再导入全局变量模块，而是直接用this就可以引用了，如下:
+export default {
+  mounted() {
+    this.$g_checkMobile(13988776655);
+  },
+};
+```
+
+2. 全局混入mixin
+
+```js
+// mixin.js
+const mixin = {
+  methods: {
+    checkMobile(m) {
+      return /^[1][0-9]{10}$/.test(m)
+    }
+  },
+}
+export default mixin
+```
+
+```js
+// main.js
+import Vue from 'vue'
+import mixin from '@/mixin'
+Vue.mixin(mixin)
+```
+
+```js
+// 在项目中直接使用
+export default {
+ mounted() {
+   this.checkMobile()
+ }
+}
+```
+
+3. 使用Plugin方式
+
+```js
+// plugin.js
+const checkMobile = m => /^[1][0-9]{10}$/.test(m);
+
+const plugin = {
+  install: function(Vue) {
+    Vue.prototype.$plugins_checkMobile = checkMobile
+    // ...
+  }
+}
+```
+
+```js
+// main.js
+import Vue from 'vue'
+import plugin from '@/plugin'
+Vue.use(plugin)
+```
+
+```js
+// 使用
+export default {
+ mounted() {
+   this.$plugins_checkMobile()
+ }
+}
+```
+
+4. 任意 vue 文件中写全局函数
+
+```js
+// 创建全局方法
+this.$root.$on("test", function () {
+  console.log("test");
+});
+// 销毁全局方法
+this.$root.$off("test");
+// 调用全局方法
+this.$root.$emit("test");
 ```
