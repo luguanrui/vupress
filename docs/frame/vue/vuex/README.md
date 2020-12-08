@@ -23,7 +23,8 @@ commit |
 
 ## 使用
 
-基础应用：
+### 基础应用
+
 ```js
 import Vuex from 'vuex';
 Vue.use(Vuex); // 1. vue的插件机制，安装vuex
@@ -41,51 +42,176 @@ new Vue({ // 3.注入store, 挂载vue实例
 }).$mount('#app');
 ```
 
-复杂应用：
+### 按模块区分
 
 user.js
 
 ```js
-import {login} from '@/api/user'
+import { login, logout, getInfo } from '@/api/user'
 
-const user = {
-  state: {
-    token: '',
-    userInfo: {}
+const state = {
+  token: getToken(), // token
+  name: '', // 用户名
+  avatar: '', // 用户头像
+  introduction: '', // 用户个人介绍
+  roles: [], // 用户角色列表
+}
+
+const mutations = {
+  SET_TOKEN: (state, token) => {
+    state.token = token
   },
-  mutations: {
-    SET_TOKEN(state, val) {
-      state.token = val
-    },
-    SET_USERINFO(state, val) {
-      state.userInfo = val
-    },
+  SET_INTRODUCTION: (state, introduction) => {
+    state.introduction = introduction
   },
-  actions: {
-    LoginActions({commit,state,dispatch}, params) {
-        return new Promise((resolve,reject) => {
-            login(params).then(res => {
-                const {code, rs} = res
-                if (code === 200){
-                    commit('token', data.token)
-                    localStorage.setItem('token', data.token)
-                    resolve(res)
-                }else {
-                    reject(res)
-                }
-            }).catch(error => {
-            reject(error)
-          })
-        })
+  SET_NAME: (state, name) => {
+    state.name = name
+  },
+  SET_AVATAR: (state, avatar) => {
+    state.avatar = avatar
+  },
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
+  },
+}
+
+const actions = {
+  // 登录
+  async login({ commit }, userInfo) {
+    const { username, password } = userInfo
+    try {
+      const { data } = await login({ username: username.trim(), password: password })
+      // 设置vuex和cookie中的token
+      commit('SET_TOKEN', data.token)
+      setToken(data.token)
+    } catch (error) {
+      throw new Error(error)
     }
   },
-  getters: {
-    userInfo(state) {
-        return state.userInfo
+  // 退出
+  async logout({ commit, state, dispatch }) {
+    try {
+      await logout(state.token)
+      dispatch('resetToken')
+      dispatch('tagsView/delAllViews')
+    } catch (error) {
+      throw new Error(error)
     }
   },
 }
-export default user
+
+export default {
+  namespaced: true,
+  state,
+  mutations,
+  actions,
+}
+```
+
+settings.js
+
+```js
+import variables from '@/styles/element-variables.scss'
+import defaultSettings from '@/settings'
+
+const { showSettings, tagsView, fixedHeader, sidebarLogo } = defaultSettings
+
+const state = {
+  theme: variables.theme, // 主题色
+  showSettings: showSettings, // 是否显示设置面板
+  tagsView: tagsView, // 是否显示tagsView
+  fixedHeader: fixedHeader, // 是否固定头部
+  sidebarLogo: sidebarLogo, // 是否显示侧边栏的logo
+}
+
+const mutations = {
+  CHANGE_SETTING: (state, { key, value }) => {
+    if (state.hasOwnProperty(key)) {
+      state[key] = value
+    }
+  },
+}
+
+const actions = {
+  changeSetting({ commit }, data) {
+    commit('CHANGE_SETTING', data)
+  },
+}
+
+export default {
+  namespaced: true,
+  state,
+  mutations,
+  actions,
+}
+```
+
+index.js
+
+```js
+import Vue from 'vue'
+import Vuex from 'vuex'
+import user from './user'
+import settings from './settings'
+
+Vue.use(Vuex)
+
+const store = new Vuex.Store({
+  modules: [user, settings],
+  getters
+})
+
+export default store
+```
+
+main.js
+
+```js
+import Vue from 'vue'
+import App from './App'
+import store from './store'
+// ...
+
+new Vue({
+  el: '#app',
+  store,
+  render: (h) => h(App),
+})
+```
+
+使用：`this.$store.dispatch('user/login', 参数)`
+
+```vue
+<template>
+</template>
+<script>
+export default {
+  data() {
+    return {}
+  },
+  methods: {
+    handleLogin() {
+      this.$refs.loginForm.validate((valid) => {
+        if (valid) {
+          this.loading = true
+          this.$store
+            .dispatch('user/login', this.loginForm)
+            .then(() => {
+              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+              this.loading = false
+            })
+            .catch(() => {
+              this.loading = false
+            })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+  },
+}
+</script>
 ```
 
 ## 辅助函数
